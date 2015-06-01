@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Periodos</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Periodos</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmPeriodos">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlPeriodos">
+                        <p:dataTable id="tblPeriodos" value="#{periodoControlador.lstPeriodos}" 
+                                     var="periodo" 
+                                     paginator="true" rows="10" rowKey="#{periodo.codigo}" selectionMode="single" 
+                                     selection="#{periodoControlador.periodosSel}">
+                            <p:column filterBy="#{periodo.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.nombre}" headerText="Nombre">
+                                <h:outputText value="#{periodo.nombre}"/>
+                            </p:column>
+
+                            <p:column filterBy="#{periodo.fecha_inicio}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.fecha_inicio}" headerText="Fecha de Inicio">
+                                <h:outputText value="#{periodo.fecha_inicio}"/>
+                            </p:column>
+ 
+                            <p:column filterBy="#{periodo.fecha_fin}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.fecha_fin}" headerText="Fecha Final">
+                                <h:outputText value="#{periodo.fecha_fin}"/>
+                            </p:column>
+
+                            <p:column filterBy="#{periodo.tipo}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.tipo}" headerText="Tipo">
+                                <h:outputText value="#{periodo.tipo}"/>
+                            </p:column>
+ 
+                            <p:column filterBy="#{periodo.observaciones}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.observaciones}" headerText="Observaciones">
+                                <h:outputText value="#{periodo.observaciones}"/>
+                            </p:column>
+ 
+                            <p:column filterBy="#{periodo.codigo_sicoa}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.codigo_sicoa}" headerText="Código Sicoa">
+                                <h:outputText value="#{periodo.codigo_sicoa}"/>
+                            </p:column>
+
+                            <p:column filterBy="#{periodo.estado}" filterMatchMode="startsWith" 
+                                      sortBy="#{periodo.estado}" headerText="Estado">
+                                <h:outputText value="#{periodo.estado}"/>
+                            </p:column>
+
+                            <p:column exportable="false">
+                                <p:commandButton id="btnEditarPeriodos" icon="ui-icon-pencil"  title="Editar Periodo" 
+                                                 oncomplete="wdlgEditarPeriodos.show()" 
+                                                 process="@this" update=":dlgEditarPeriodos, @form">                                   
+                                    <f:setPropertyActionListener value="#{periodo}" 
+                                                                 target="#{periodoControlador.periodosSel}"/>
+                                </p:commandButton>
+                                
+                                <p:commandButton id="btnEliminarPeriodos" icon="ui-icon-close"  title="Eliminar Periodo"
+                                                 oncomplete="wdlgEliminarPeriodos.show()" 
+                                                 update=":dlgEliminarPeriodos">                                   
+                                    <f:setPropertyActionListener value="#{periodo}" 
+                                                                 target="#{periodoControlador.periodosSel}"/>
+                                </p:commandButton>
+                            </p:column>     
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoPeriodos" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoPeriodos.show()" title="Nuevo Periodo"/>  
+                                
+                                <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblPeriodos" fileName="Periodos" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblPeriodos" fileName="Periodos" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblPeriodos" fileName="Periodos" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblPeriodos" fileName="Periodos" pageOnly="true" />
+                                </h:commandLink>
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoPeriodos" header="Nuevo Periodo" widgetVar="wdlgNuevoPeriodos" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold">    
+                    <h:form id="frmNuevoPeriodos">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoPeriodos" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{periodoControlador.objPeriodos.nombre}" title="ej: Ingenieria" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Fecha Inicial:"/>
+                            <p:calendar id="DateFechaInicio" value="#{periodoControlador.fechaInicio}" title="01-01-2010"  
+                                        required="true" requiredMessage="El campo fecha de inicio es requerido" />
+                                                        
+                            <h:outputText value="Fecha Final:"/>
+                            <p:calendar id="DateFechaFin" value="#{periodoControlador.fechaFin}" title="01-01-2010"  
+                                        required="true" requiredMessage="El campo fecha fin es requerido" />
+                                                   
+                            <h:outputText value="Tipo:"/>
+                            <p:inputText value="#{periodoControlador.objPeriodos.tipo}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese tipo"/>
+                            
+                             <h:outputText value="Observaciones:"/>
+                             <p:inputText value="#{periodoControlador.objPeriodos.observaciones}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese observaciones"/>
+                             
+                             <h:outputText value="Estado:"/>
+                             <p:selectOneMenu id="cmbEstado" value="#{periodoControlador.objPeriodos.estado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{periodoControlador.insertarPeriodos()}" 
+                  update=":frmPeriodos:pnlPeriodos"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoPeriodos.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog id="dlgEditarPeriodos" header="Editar Periodos" widgetVar="wdlgEditarPeriodos" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarPeriodos">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarPeriodos" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.nombre}" title="ej: Ingenieria"
+                                         required="true" requiredMessage="Ingrese el Nombre"/>
+                            
+                            <h:outputText value="Fecha Inicial:"/>
+                            <p:calendar id="DateFechaInicio" value="#{periodoControlador.fechaInicio}" title="01-01-2010"  
+                                        required="true" requiredMessage="El campo fecha de inicio es requerido" />
+                                                        
+                            <h:outputText value="Fecha Final:"/>
+                            <p:calendar id="DateFechaFin" value="#{periodoControlador.fechaFin}" title="10-10-2010"  
+                                        required="true" requiredMessage="El campo fecha fin es requerido" />
+                            
+                            <h:outputText value="Tipo:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.tipo}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese el tipo"/>
+                            
+                            <h:outputText value="Observaciones:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.observaciones}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese el tipo"/>
+                            
+                            <h:outputText value="Código Sicoa:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.codigo_sicoa}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese el código de sicoa"/>
+                            
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{periodoControlador.periodosSel.estado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{periodoControlador.actualizarPeriodos()}" 
+                                         update=":frmPeriodos:pnlPeriodos"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarPeriodos.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarPeriodos" header="Eliminar Periodos" widgetVar="wdlgEliminarPeriodos" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarPeriodos">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Periodod?"/>
+                        <p:panelGrid id="pngEliminarPeriodos" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.nombre}" title="ej: Gerencia"
+                                         required="true" requiredMessage="Ingrese el Nombre" disabled="true"/>
+                            
+                            <h:outputText value="Fecha Inicial:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.fecha_inicio}" title="ej: 01-01-2010"
+                                         required="true" requiredMessage="Ingrese Fecha Inicial" disabled="true"/>
+                            
+                            <h:outputText value="Fecha Final:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.fecha_fin}" title="ej: 01-01-2010"
+                                         required="true" requiredMessage="Ingrese Fecha Final" disabled="true"/>
+                            
+                            <h:outputText value="Tipo:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.tipo}" title="ej: ninguna"
+                                         required="true" requiredMessage="Ingrese tipo" disabled="true"/>
+                            
+                             <h:outputText value="Observaciones:"/>
+                             <p:inputText value="#{periodoControlador.periodosSel.observaciones}" title="ej: ninguna"
+                                         required="true" requiredMessage="Ingrese observaciones" disabled="true"/>
+                            
+                            <h:outputText value="Código Sicoa:"/>
+                            <p:inputText value="#{periodoControlador.periodosSel.codigo_sicoa}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese el Codigo_sicoa" disabled="true"/>
+                             
+                             <h:outputText value="Estado:"/>
+                             <p:selectOneMenu id="cmbEstado" value="#{periodoControlador.periodosSel.estado}" 
+                                             required="true" requiredMessage="Elija una opción" disabled="true">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{periodoControlador.eliminarPeriodos()}" 
+                                         update=":frmPeriodos:pnlPeriodos"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarPeriodos.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Encabezado de Tutorias</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Encabezado de Tutorias</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmEncabezadoTutoria">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlEncabezadoTutoria">
+                        
+                        
+                        <p:dataTable id="tblEncabezadoTutoria" value="#{encabezadoTutoriaControlador.lstEncabezadoTutoria}" 
+                                     var="encabezadotutoria" 
+                                     paginator="true" rows="10" rowKey="#{encabezadotutoria.codigo}" selectionMode="single" 
+                                     selection="#{encabezadoTutoriaControlador.encabezadoTutoriaSel}">
+                            <p:column filterBy="#{encabezadotutoria.fecha}" filterMatchMode="startsWith" 
+                                      sortBy="#{encabezadotutoria.fecha}" headerText="Fecha">
+                                <h:outputText value="#{encabezadotutoria.fecha}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{encabezadotutoria.actividad}" filterMatchMode="startsWith" 
+                                      sortBy="#{encabezadotutoria.actividad}" headerText="Actividad">
+                                <h:outputText value="#{encabezadotutoria.actividad}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{encabezadotutoria.codigo_tutor}" filterMatchMode="startsWith" 
+                                      sortBy="#{encabezadotutoria.codigo_tutor}" headerText="Tutor">
+                                <h:outputText value="#{encabezadotutoria.codigo_tutor.codigo}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{encabezadotutoria.codigo_modalidad_tutoria}" filterMatchMode="startsWith" 
+                                      sortBy="#{encabezadotutoria.codigo_modalidad_tutoria}" headerText="Encabezado Tutoría">
+                                <h:outputText value="#{encabezadotutoria.codigo_modalidad_tutoria.nombre}"/>
+                            </p:column>
+                            
+                            <p:column>
+                                <p:commandButton id="btnEditarEncabezadoTutoria" icon="ui-icon-pencil"  title="Editar Encabezado Tutoria" 
+                                                 oncomplete="wdlgEditarEncabezadoTutoria.show()" 
+                                                 process="@this" update=":dlgEditarEncabezadoTutoria, @form">                                   
+                                    <f:setPropertyActionListener value="#{encabezadotutoria}" 
+                                                                 target="#{encabezadoTutoriaControlador.encabezadoTutoriaSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarEncabezadoTutoria" icon="ui-icon-close"  title="Eliminar Encabezado Tutoria"
+                                                 oncomplete="wdlgEliminarEncabezadoTutoria.show()" 
+                                                 update=":dlgEliminarEncabezadoTutoria">                                   
+                                    <f:setPropertyActionListener value="#{encabezadotutoria}" 
+                                                                 target="#{encabezadoTutoriaControlador.encabezadoTutoriaSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoEncabezadoTutoria" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoEncabezadoTutoria.show()" title="Nuevo Encabezado Tutoria"/>  
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoEncabezadoTutoria" header="Nueva Encabezado Tutoria" widgetVar="wdlgNuevoEncabezadoTutoria" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                    
+                    
+                    
+                    <h:form id="frmNuevoEncabezadoTutoria">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoEncabezadoTutoria" columns="2">
+                            
+                            
+                            <h:outputText value="Fecha:"/>
+                            <p:calendar id="EncabezadoFecha" value="#{encabezadoTutoriaControlador.fechaEncabezado}" title="Fecha de Encabezado"  
+                                        required="true" requiredMessage="El campo fecha de inicio es requerido" />
+                               
+                            <h:outputText value="Actividad:"/>
+                            <p:inputText value="#{encabezadoTutoriaControlador.objEncabezadoTutoria.actividad}" title="ej: Actividad 1"
+                                         required="true" requiredMessage="Ingrese una actividad"/>
+                            
+                            <h:outputText value="Tutor:"/>
+                            <p:selectOneMenu id="cmbtutor" value="#{encabezadoTutoriaControlador.valorTSeleccionado}">
+                                <f:selectItem itemLabel="Elija un tutor" itemValue="#{null}"/>
+                                <f:selectItems value="#{encabezadoTutoriaControlador.tutor}" var="tutor" itemLabel="#{tutor.codigo}" itemValue="#{tutor.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                             <h:outputText value="Modalidad de Tutoria:"/>
+                             <p:selectOneMenu id="cmbModalidadTutoria" value="#{encabezadoTutoriaControlador.valorMTSeleccionada}">
+                                <f:selectItem itemLabel="Elija una opcion" itemValue="#{null}"/>
+                                <f:selectItems value="#{encabezadoTutoriaControlador.modalidadTutoria}" var="modtut" itemLabel="#{modtut.nombre}" itemValue="#{modtut.codigo}"/>
+                            </p:selectOneMenu>
+                                
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{encabezadoTutoriaControlador.insertarEncabezadoTutoria()}" 
+                                         update=":frmEncabezadoTutoria:pnlEncabezadoTutoria"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoEncabezadoTutoria.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+
+                <p:dialog id="dlgEditarEncabezadoTutoria" header="Editar Encabezado de Tutoria" widgetVar="wdlgEditarEncabezadoTutoria" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarEncabezadoTutoria">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarEncabezadoTutoria" columns="2">
+                            
+                          <h:outputText value="Fecha:"/>
+                            <p:calendar id="EncabezadoFecha" value="#{encabezadoTutoriaControlador.fechaEncabezado}" title="Fecha de Encabezado"  
+                                        required="true" requiredMessage="El campo fecha de inicio es requerido" />
+                               
+                            <h:outputText value="Actividad:"/>
+                            <p:inputText value="#{encabezadoTutoriaControlador.encabezadoTutoriaSel.actividad}" title="ej: Actividad 1"
+                                         required="true" requiredMessage="Ingrese una actividad"/>
+                            
+                            <h:outputText value="Código Tutor:"/>
+                            <p:selectOneMenu id="cmbTutor" value="#{encabezadoTutoriaControlador.encabezadoTutoriaSel.codigo_tutor.codigo}">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItems value="#{encabezadoTutoriaControlador.tutor}" var="tutor" itemLabel="#{tutor.codigo}" itemValue="#{tutor.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText value="Código Modalidad de Tutoria:"/>
+                            <p:selectOneMenu id="cmbModalidadTutoria" value="#{encabezadoTutoriaControlador.encabezadoTutoriaSel.codigo_modalidad_tutoria.codigo}">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItems value="#{encabezadoTutoriaControlador.modalidadTutoria}" var="modtut" itemLabel="#{modtut.nombre}" itemValue="#{modtut.codigo}"/>
+                            </p:selectOneMenu>
+                                
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{encabezadoTutoriaControlador.actualizarEncabezadoTutoria()}" 
+                                         update=":frmEncabezadoTutoria:pnlEncabezadoTutoria"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarEncabezadoTutoria.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarEncabezadoTutoria" header="Eliminar Encabezado de Tutoria" widgetVar="wdlgEliminarEncabezadoTutoria" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarEncabezadoTutoria">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Encabezado de Tutoria?"/>
+                        <p:panelGrid id="pngEliminarEncabezadoTutoria" columns="2">
+                            
+                            
+                            <h:outputText value="Fecha:"/>
+                            <p:calendar id="EncabezadoFecha" value="#{encabezadoTutoriaControlador.fechaEncabezado}" title="Fecha de Encabezado"  
+                                        required="true" requiredMessage="El campo fecha de inicio es requerido" disabled="true" />
+                               
+                            <h:outputText value="Actividad:"/>
+                            <p:inputText value="#{encabezadoTutoriaControlador.encabezadoTutoriaSel.actividad}" title="ej: Actividad 1"
+                                         required="true" requiredMessage="Ingrese una actividad" disabled="true"/>
+                            
+                            <h:outputText value="Código Tutor:"/>
+                            <h:inputText value="#{encabezadoTutoriaControlador.encabezadoTutoriaSel.codigo_tutor.codigo}" 
+                                         disabled="true"/>
+                           
+                            
+                             <h:outputText value="Código Modalidad de Tutoria:"/>
+                             <h:inputText value="#{encabezadoTutoriaControlador.encabezadoTutoriaSel.codigo_modalidad_tutoria.nombre}"
+                                          disabled="true"/>
+                               
+                                        
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{encabezadoTutoriaControlador.eliminarEncabezadoTutoria()}" 
+                                         update=":frmEncabezadoTutoria:pnlEncabezadoTutoria"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarEncabezadoTutoria.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

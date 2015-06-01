@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Facultades</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Facultades</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmfacultad">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlFacultad">
+                        <p:dataTable id="tblFacultad" value="#{facultadControlador.lstFacultad}" 
+                                     var="facultad" 
+                                     paginator="true" rows="10" rowKey="#{facultad.codigo}" selectionMode="single" 
+                                     selection="#{facultadControlador.facultadSel}">
+                            <p:column filterBy="#{facultad.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{facultad.nombre}" headerText="Nombre">
+                                <h:outputText value="#{facultad.nombre}"/>
+                            </p:column>
+                            
+                            
+                            
+                            <p:column filterBy="#{facultad.descripcion}" filterMatchMode="startsWith" 
+                                      sortBy="#{facultad.descripcion}" headerText="Descripción">
+                                <h:outputText value="#{facultad.descripcion}"/>
+                            </p:column>
+                            
+                            
+                            
+                            
+                            <p:column filterBy="#{facultad.codigo_sicoa}" filterMatchMode="startsWith" 
+                                      sortBy="#{facultad.codigo_sicoa}" headerText="Código Sicoa">
+                                <h:outputText value="#{facultad.codigo_sicoa}"/>
+                            </p:column>
+                            
+                            
+                            
+                            
+                            <p:column exportable="false">
+                                <p:commandButton id="btnEditarFacultad" icon="ui-icon-pencil"  title="Editar Facultad"  
+                                                 oncomplete="wdlgEditarFacultad.show()" 
+                                                 process="@this" update=":dlgEditarFacultad, @form">                                   
+                                    <f:setPropertyActionListener value="#{facultad}" 
+                                                                 target="#{facultadControlador.facultadSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarFacultad" icon="ui-icon-close"  title="Eliminar Facultad"
+                                                 oncomplete="wdlgEliminarFacultad.show()" 
+                                                 update=":dlgEliminarFacultad">                                   
+                                    <f:setPropertyActionListener value="#{facultad}" 
+                                                                 target="#{facultadControlador.facultadSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoFacultad" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoFacultad.show()" title="Nueva Facultad"/>  
+  
+                                <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblFacultad" fileName="facultad" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblFacultad" fileName="facultad" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblFacultad" fileName="facultad" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblFacultad" fileName="facultad" pageOnly="true" />
+                                </h:commandLink>
+                            </f:facet>    
+                            
+                        </p:dataTable>
+                    </p:panel>
+         
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoFacultad" header="Nueva Facultad" widgetVar="wdlgNuevoFacultad" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                    
+                    
+                    
+                    <h:form id="frmNuevoFacultad">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoFacultad" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{facultadControlador.objFacultad.nombre}" title="ej: Ingenieria" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{facultadControlador.objFacultad.descripcion}" title="ej: Ninguna"
+                                         required="true" requiredMessage="Ingrese una descripción"/>
+                            
+                            <h:outputText value="Código Sicoa:"/>
+                            <p:inputText value="#{facultadControlador.objFacultad.codigo_sicoa}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese codigo sicoa"/>
+                                
+                                
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{facultadControlador.insertarFacultad()}" 
+                                         update=":frmfacultad:pnlFacultad"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoFacultad.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+
+                <p:dialog id="dlgEditarFacultad" header="Editar Facultad" widgetVar="wdlgEditarFacultad" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarFacultad">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarFacultad" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{facultadControlador.facultadSel.nombre}" title="ej: Ingenieria"
+                                         required="true" requiredMessage="Ingrese el Nombre"/>
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{facultadControlador.facultadSel.descripcion}" title="ej: Ninguna"
+                                         required="true" requiredMessage="Ingrese la Descripción"/>
+                            <h:outputText value="Código Sicoa:"/>
+                            <p:inputText value="#{facultadControlador.facultadSel.codigo_sicoa}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese código sicoa"/>
+                            
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{facultadControlador.actualizarFacultad()}" 
+                                         update=":frmfacultad:pnlFacultad"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarFacultad.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarFacultad" header="Eliminar Facultad" widgetVar="wdlgEliminarFacultad" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarFacultad">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar la  Facultad?"/>
+                        <p:panelGrid id="pngEliminarFacultad" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{facultadControlador.facultadSel.nombre}" title="ej: Gerencia"
+                                         required="true" requiredMessage="Ingrese el Nombre" disabled="true"/>
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{facultadControlador.facultadSel.descripcion}" title="ej: ninguna"
+                                         required="true" requiredMessage="Ingrese Descripción" disabled="true"/>
+                            
+                            <h:outputText value="Código Sicoa:"/>
+                            <p:inputText value="#{facultadControlador.facultadSel.codigo_sicoa}" title="ej: 00000"
+                                         required="true" requiredMessage="Ingrese la Codigo_sicoa" disabled="true"/>
+                                                        
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{facultadControlador.eliminarFacultad()}" 
+                                         update=":frmfacultad:pnlFacultad"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarFacultad.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

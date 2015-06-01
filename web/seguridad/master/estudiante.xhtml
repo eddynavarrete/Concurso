@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="Estudiante">Gestión de Estudiantes</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Estudiantes</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmestudiante">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlEstudiante">
+                        <p:dataTable id="tblEstudiante" value="#{estudianteControlador.lstEstudiantes}" 
+                                     var="estudiante" 
+                                     paginator="true" rows="10" rowKey="#{estudiante.codigo}" selectionMode="single" 
+                                     selection="#{estudianteControlador.estudianteSel}">
+                            <p:column filterBy="#{estudiante.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.nombre}" headerText="Nombres">
+                                <h:outputText value="#{estudiante.nombre}"/>
+                            </p:column>
+                            
+                            
+                            
+                            <p:column filterBy="#{estudiante.apellido}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.apellido}" headerText="Apellidos">
+                                <h:outputText value="#{estudiante.apellido}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{estudiante.cedula}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.cedula}" headerText="Cedula">
+                                <h:outputText value="#{estudiante.cedula}"/>
+                            </p:column>
+                                                        
+                            
+                            <p:column filterBy="#{estudiante.codigo_sicoa}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.codigo_sicoa}" headerText="Código Sicoa">
+                                <h:outputText value="#{estudiante.codigo_sicoa}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{estudiante.codigo_periodo.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.codigo_periodo.nombre}" headerText="Periodo">
+                                <h:outputText value="#{estudiante.codigo_periodo.nombre}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{estudiante.codigo_nivel.codigo_escuela.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.codigo_nivel.codigo_escuela.nombre}" headerText="Facultad">
+                                <h:outputText value="#{estudiante.codigo_nivel.codigo_escuela.nombre}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{estudiante.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" headerText="Escuela">
+                                <h:outputText value="#{estudiante.codigo_nivel.codigo_escuela.codigo_facultad.nombre}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{estudiante.codigo_nivel.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{estudiante.codigo_nivel.nombre}" headerText="Nivel">
+                                <h:outputText value="#{estudiante.codigo_nivel.nombre}"/>
+                            </p:column>
+                            
+                            
+                            
+                            <p:column exportable="false">
+                                <p:commandButton id="btnEditarEstudiante" icon="ui-icon-pencil"  title="Editar Estudiante" 
+                                                 oncomplete="wdlgEditarEstudiante.show()" 
+                                                 process="@this" update=":dlgEditarEstudiante, @form">                                   
+                                    <f:setPropertyActionListener value="#{estudiante}" 
+                                                                 target="#{estudianteControlador.estudianteSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarEstudiante" icon="ui-icon-close"  title="Eliminar Estudiante"
+                                                 oncomplete="wdlgEliminarEstudiante.show()" 
+                                                 update=":dlgEliminarEstudiante">                                   
+                                    <f:setPropertyActionListener value="#{estudiante}" 
+                                                                 target="#{estudianteControlador.estudianteSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoEstudiante" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoEstudiante.show()" title="Nuevo Estudiante"/>  
+                                
+                                 <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblEstudiante" fileName="estudiante" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblEstudiante" fileName="estudiante" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblEstudiante" fileName="estudiante" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblEstudiante" fileName="estudiante" pageOnly="true" />
+                                </h:commandLink>
+                                
+                                
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoEstudiante" header="Nuevo Estudiante" widgetVar="wdlgNuevoEstudiante" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                    
+                    
+                    
+                    <h:form id="frmNuevoEstudiante">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoEstudiante" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{estudianteControlador.objEstudiante.nombre}" title="ej: Sandra" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Apellido:"/>
+                            <p:inputText value="#{estudianteControlador.objEstudiante.apellido}" title="ej: Contento"
+                                         required="true" requiredMessage="Ingrese el apellido"/>
+                            
+                            <h:outputText value="Cedula:"/>
+                            <p:inputText value="#{estudianteControlador.objEstudiante.cedula}" title="ej: 0604017897"
+                                         required="true" requiredMessage="Ingrese la cedula"/>
+                             
+                            <h:outputText value="Codigo sicoa:"/>
+                            <p:inputText value="#{estudianteControlador.objEstudiante.codigo_sicoa}" title="ej: 0000"
+                                         required="true" requiredMessage="Ingrese el codigo sicoa"/>
+                            
+                            <h:outputText value="Periodo:"/>
+                            <p:selectOneMenu id="cmbPeriodo" value="#{estudianteControlador.valorPSeleccionado}">
+                                <f:selectItem itemLabel="Elija un periodo" itemValue="#{null}"/>
+                                <f:selectItems value="#{estudianteControlador.lstPeriodos}" var="periodos" itemLabel="#{periodos.nombre}" itemValue="#{periodos.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                            
+                            
+                            <h:outputText id="otxtFacultad" value="Facultad:"/>
+                            <p:selectOneMenu value="#{estudianteControlador.valorFSeleccionada}">
+                                            <f:selectItem itemValue="#{null}" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{estudianteControlador.lstFacultades}" var="facultades" 
+                                                           itemLabel="#{facultades.nombre}" itemValue="#{facultades.codigo}"/>
+                                            <p:ajax event="change" listener="#{estudianteControlador.obtenerEscuelasDadoCodigoFacultad()}" update="cmdEscuelitas, cmdNiveles"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText id="otxtEscuelas" value="Escuela:"/>                           
+                            <p:selectOneMenu id="cmdEscuelitas" value="#{estudianteControlador.valorESeleccionada}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{estudianteControlador.lstEscuelas}" var="escuelas" 
+                                                           itemLabel="#{escuelas.nombre}" itemValue="#{escuelas.codigo}"/> 
+                                            <p:ajax event="change" listener="#{estudianteControlador.obtenerNivelDadoCodigoEscuela()}" update="cmdNiveles"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText id="otxtNiveles" value="Nivel:"/>                           
+                            <p:selectOneMenu id="cmdNiveles" value="#{estudianteControlador.valorNSeleccionado}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{estudianteControlador.lstNiveles}" var="niveles" 
+                                                           itemLabel="#{niveles.nombre} #{niveles.paralelo}" itemValue="#{niveles.codigo}"/> 
+                            </p:selectOneMenu>
+                            
+                            
+                           </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{estudianteControlador.insertarEstudiante()}" 
+                                         update=":frmestudiante:pnlEstudiante"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoEstudiante.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+
+                <p:dialog id="dlgEditarEstudiante" header="Editar Estudiante" widgetVar="wdlgEditarEstudiante" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarEstudiante">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarEstudiante" columns="2">
+                           <h:outputText value="Nombre:"/>
+                           <p:inputText value="#{estudianteControlador.estudianteSel.nombre}" title="ej: Sandra" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Apellido:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.apellido}" title="ej: Contento"
+                                         required="true" requiredMessage="Ingrese el apellido"/>
+                            
+                            <h:outputText value="Cedula:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.cedula}" title="ej: 0604017897"
+                                         required="true" requiredMessage="Ingrese la cedula"/>
+                             
+                            <h:outputText value="Codigo sicoa:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.codigo_sicoa}" title="ej: 0000"
+                                         required="true" requiredMessage="Ingrese el codigo sicoa"/>
+                            
+                            <h:outputText value="Periodo:"/>
+                            <p:selectOneMenu id="cmbPeriodo" value="#{estudianteControlador.valorPSeleccionado}">
+                                <f:selectItem itemLabel="Elija un periodo" itemValue="#{null}"/>
+                                <f:selectItems value="#{estudianteControlador.lstPeriodos}" var="periodos" itemLabel="#{periodos.nombre}" itemValue="#{periodos.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText id="otxtNiveles" value="Nivel:"/>                           
+                            <p:selectOneMenu id="cmdNiveles" value="#{estudianteControlador.valorNSeleccionado}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{estudianteControlador.lstNiveles}" var="niveles" itemLabel="#{niveles.nombre} #{niveles.paralelo}" itemValue="#{niveles.codigo}"/> 
+                            </p:selectOneMenu>
+                            
+   
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{estudianteControlador.actualizarEstudiante()}" 
+                                         update=":frmestudiante:pnlEstudiante"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarEstudiante.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarEstudiante" header="Eliminar Estudiante" widgetVar="wdlgEliminarEstudiante" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarEstudiante">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Estudiante?"/>
+                        <p:panelGrid id="pngEliminarEstudiante" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.nombre}" title="ej: Sandra" 
+                                         required="true" requiredMessage="Ingrese el nombre" disabled="true"/>
+                            
+                            <h:outputText value="Apellido:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.apellido}" title="ej: Contento"
+                                         required="true" requiredMessage="Ingrese el apellido" disabled="true"/>
+                            
+                            <h:outputText value="Cedula:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.cedula}" title="ej: 0604017897"
+                                         required="true" requiredMessage="Ingrese la cedula" disabled="true"/>
+                             
+                            <h:outputText value="Codigo sicoa:"/>
+                            <p:inputText value="#{estudianteControlador.estudianteSel.codigo_sicoa}" title="ej: 0000"
+                                         required="true" requiredMessage="Ingrese el codigo sicoa" disabled="true"/>
+                            
+                            <h:outputText value="Periodo:"/>
+                            <h:inputText value="#{estudianteControlador.estudianteSel.codigo_periodo.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Nivel:"/>
+                            <h:inputText value="#{estudianteControlador.estudianteSel.codigo_nivel.nombre}"
+                                        disabled="true"/>
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{estudianteControlador.eliminarEstudiante()}" 
+                                         update=":frmestudiante:pnlEstudiante"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarEstudiante.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

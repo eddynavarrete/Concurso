@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">
+                Gestión de Personas
+            </ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">
+                Datos de los Empleados
+            </ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmTablaPersonas">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:dataTable id="tblTablaPersonas" value="#{personaC.lstPersonaConsulta}" var="persona" paginator="true" rows="10"
+                                 draggableColumns="false" rowKey="#{persona.codigoPersona}" selectionMode="single"   >
+                        <p:column style="width:2%">  
+                            <p:rowToggler />  
+                        </p:column>  
+                        <p:column headerText="Cedúla" filterBy="strIdentificacion">
+                            <h:outputText value="#{persona.strIdentificacion}"/>
+                        </p:column>
+                        <p:column headerText="Apellido" filterBy="strApellidos">
+                            <h:outputText value="#{persona.strApellidos}"/>
+                        </p:column>
+                        <p:column headerText="Nombre"  filterBy="strNombres">
+                            <h:outputText value="#{persona.strNombres}"/>
+                        </p:column>
+                        <p:column headerText="Dependencia">
+                            <h:outputText value="#{persona.strDependenciaNombre}"/>
+                        </p:column>
+                        <p:column headerText="Cargo">
+                            <h:outputText value="#{persona.strCargoNombre}"/>
+                        </p:column>                        
+                        <p:column>
+                            <p:commandButton id="btnEditar" icon="ui-icon-pencil"  title="Editar" 
+                                             action="#{personaC.preparaEditar}" process="@this"
+                                             oncomplete="PF('wdlgEditarPersona').show()" 
+                                             update=":frmEditarPersona:pngEditarPersona,
+                                             :frmEditarPersona:pnDetallesPais,:frmEditarPersona:pnDetalleDependencia">                                   
+                                <f:setPropertyActionListener value="#{persona}" 
+                                                             target="#{personaC.objPersonaConsultaActual}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:rowExpansion>
+                            <h:panelGrid id="display" columns="2" cellpadding="4" style="width:300px;"  
+                                         styleClass=" ui-widget-content grid">
+                                <h:outputText value="Fecha Ingreso:" />  
+                                <h:outputText value="#{persona.dtFechaI}"/>
+                                <h:outputText value="Fecha Fin:" />  
+                                <h:outputText value="#{persona.dtFechaF}"/>
+
+                            </h:panelGrid>
+                        </p:rowExpansion>  
+                        <f:facet name="footer">
+                            <p:commandButton value="Agregar Persona" icon="ui-icon-newwin"
+                                             update=":frmAgregarPersona:pngAgregarPersona" oncomplete="wdlgAgregarPersona.show()"
+                                             title="Agregar Usuario"/> 
+                            <p:commandButton value="Buscar Persona" icon="ui-icon-search"
+                                             update=":formPersonas:pngBusqueda" oncomplete="wdialogoBusquedaPersonas.show()"
+                                             action="#{ausenciasTemporalesC.preparaBusqueda}"
+                                             process="@this"
+                                             title="Buscar Persona"/>
+                        </f:facet>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgAgregarPersona" header="Agregar Persona" widgetVar="wdlgAgregarPersona" 
+                          modal="true" closable="false" 
+                          resizable="false"
+                          showEffect="clip" hideEffect="fold" >  
+                    <h:form id="frmAgregarPersona">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:scrollPanel style="width:800px;height:400px" mode="native">
+                            <p:panelGrid id="pngAgregarPersona" columns="4">
+                                <h:outputText value="Nombres:"/>
+                                <p:inputText id="txtNombreI" value="#{personaC.objPersona.strNombres}"  required="true" />
+
+                                <h:outputText value="Apellidos:"/>
+                                <p:inputText id="txtApellidoI" value="#{personaC.objPersona.strApellidos}" required="true"  />
+
+                                <h:outputText value="Cédula:"/>
+                                <p:inputText id="txtCedulaI" value="#{personaC.objPersona.strIdentificacion}"  required="true" />
+
+                                <h:outputText value="Tipo Identificacion:"/>
+                                <p:inputText id="txtTipoII" value="#{personaC.objPersona.strTipoIdentificacion}" required="true" />
+
+                                <h:outputText value="E-mail"/>
+                                <p:inputText id="txtEmailI" value="#{personaC.objPersona.strMail}" required="true"  />
+
+                                <h:outputText value="Telefono Domicilio:"/>
+                                <p:inputText id="txtTelefonoI" value="#{personaC.objPersona.strTelefonoCasa}" required="true"  />
+
+                                <h:outputText value="Telefono Oficina:"/>
+                                <p:inputText id="txtTeloficinaI" value="#{personaC.objPersona.strTelefonoOficina}" required="true" />
+
+                                <h:outputText value="Celular:"/>
+                                <p:inputText id="txtCelI" value="#{personaC.objPersona.strTelefonoCelular}" />
+
+                                <h:outputText value="Fecha Nacimiento:"/>
+                                <p:calendar id="dnnaI" navigator="true" value="#{personaC.dtfechaNac}" required="true" />         
+
+                                <h:outputText value="Capacidades:"/>
+                                <p:selectOneRadio  id="cbmCapI" value="#{personaC.objPersona.blCapacidadesDiferentes}"  required="true" >  
+                                    <f:selectItem itemLabel="Si" itemValue="true" />  
+                                    <f:selectItem itemLabel="No" itemValue="false" />  
+                                </p:selectOneRadio>
+
+                                <h:outputText value="Dir. Calle Principal:"/>
+                                <p:inputText id="txtDicCI" value="#{personaC.objPersona.strDirCallePrincipal}" required="true" />
+
+                                <h:outputText value="Dir. Calle Trans:"/>
+                                <p:inputText id="txtDicTI" value="#{personaC.objPersona.strDirCalleTrans}" required="true" />
+
+                                <h:outputText value="Dir. Número:"/>
+                                <p:inputText id="txtDirNI" value="#{personaC.objPersona.strDirNumero}" required="true" />
+
+                                <h:outputText value="Dir. Referencia:"/>
+                                <p:inputText  id="txtDirRI" value="#{personaC.objPersona.strDirReferencia}" requiredMessage="Referencia" required="true" />
+                                <h:outputText value="Tipo Sangre:"/>
+                                <p:selectOneMenu id="cboTsaI" value="#{personaC.tip0Sangre}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Tipo Sangre" >  
+                                    <f:selectItem itemLabel="Seleccione Tipo Sangre" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionTipoSangreC.lstTipoSangres}" var="tps" itemLabel="#{tps.strNombre}" itemValue="#{tps.lgCodigo}" />                             
+                                </p:selectOneMenu> 
+                                <h:outputText value="Estado Civil:"/>
+                                <p:selectOneMenu id="cboEcaI" value="#{personaC.etadocivil}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Estado Civil" >  
+                                    <f:selectItem itemLabel="Seleccione Estado Civil" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionEstadoCivilC.lstEstadoCivil}" var="ec" 
+                                                   itemLabel="#{ec.strNombre}" itemValue="#{ec.lgCodigo}" />                             
+                                </p:selectOneMenu> 
+                                <h:outputText value="Etnia:"/>
+                                <p:selectOneMenu id="cboEtaI" value="#{personaC.etnia}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Etnia" >  
+                                    <f:selectItem itemLabel="Seleccione Etnia" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionEtniaC.lsEtnia}" var="et" 
+                                                   itemLabel="#{et.strNombre}" itemValue="#{et.lgCodigo}" />                             
+                                </p:selectOneMenu> 
+                                <h:outputText value="Genero:"/>
+                                <p:selectOneMenu id="cboGnaI" value="#{personaC.genero}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Género" >  
+                                    <f:selectItem itemLabel="Seleccione Género" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionGeneroC.lstGenero}" var="gr" 
+                                                   itemLabel="#{gr.strNombre}" itemValue="#{gr.lgCodigo}" />                             
+                                </p:selectOneMenu> 
+                                <h:outputText value="Cargo Administrativo:"/>
+                                <p:selectOneMenu id="cboCarAI" value="#{personaC.cargoAdministrativo}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Cargo Administrativo" >  
+                                    <f:selectItem itemLabel="Seleccione Cargo Administrativo" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionCargoAdministrativoC.lstCargoAdministrativos}" 
+                                                   var="ca" itemLabel="#{ca.strNombre}" itemValue="#{ca.intCodigo}" />                             
+                                </p:selectOneMenu> 
+                            </p:panelGrid>
+                            <p:panelGrid columns="1" style="width:100%" id="lgProcedencia">
+                                <f:facet name="header">  
+                                    <p:row>  
+                                        <p:column colspan="2">Detalle de lugar procedencia </p:column>  
+                                    </p:row>  
+                                </f:facet> 
+                                <p:row>  
+                                    <p:column colspan="2"><p:commandButton value="Agregar" onclick="PF('wdLugarProcedenciaInsertar').show()"
+                                                                           type="button" icon="ui-icon-circle-plus"/></p:column>
+                                </p:row> 
+                                <p:row>  
+                                    <p:column colspan="2"> <h:outputText value=""/></p:column>
+                                </p:row> 
+                                <p:panelGrid id="pnDetallesPaisI" columns="1" style="width:100%">
+                                    <p:dataTable id="detalleTableI" value="#{personaC.lstDatosPaisI}"  var="datos"
+                                                 rowKey="#{datos.objParroquia.lgCodigo}" selectionMode="single" >
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Pais" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objPais.nombre}" />  
+                                        </p:column> 
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Provincia" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objProv.strNombre}" />  
+                                        </p:column> 
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Canton" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objCanton.strNombre}" />  
+                                        </p:column>
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Parroquia" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objParroquia.strNombre}" />  
+                                        </p:column>
+                                    </p:dataTable>  
+                                </p:panelGrid>
+                                <p:panelGrid columns="1" style="width:100%" id="lgDependenciaI">
+                                    <f:facet name="header">  
+                                        <p:row>  
+                                            <p:column colspan="2">Datos Dependencia</p:column>  
+                                        </p:row>  
+                                    </f:facet> 
+                                    <p:row>  
+                                        <p:column colspan="2"><p:commandButton value="Agregar" onclick="PF('wdInsertarDependencia').show()"
+                                                                               type="button" icon="ui-icon-circle-plus"/></p:column>
+                                    </p:row> 
+                                    <p:row>  
+                                        <p:column colspan="2"> <h:outputText value=""/></p:column>
+                                    </p:row> 
+                                    <p:panelGrid id="pnDetalleDependenciaI" columns="1" style="width:100%">
+                                        <p:dataTable id="detalleTableDependenciaI" value="#{personaC.lstRelacioniDependenciaI}"  var="dependencia"
+                                                     rowKey="#{dependencia.lgCodigo}" selectionMode="single" >
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Nombre Dependencia" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{dependencia.objCodigoDepencia.strNombre}" />  
+                                            </p:column> 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Fecha Inicio" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{dependencia.dtFechaInicio}" />  
+                                            </p:column> 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Fecha Fin" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{dependencia.dtFechaFin}" />  
+                                            </p:column>
+                                        </p:dataTable>  
+                                    </p:panelGrid>
+                                </p:panelGrid>
+                            </p:panelGrid>
+                            <p:commandButton value="Aceptar" action="#{personaC.insertarPersona()}" 
+                                             process="@form" 
+                                             update=":frmTablaPersonas:tblTablaPersonas"/>
+                            <p:commandButton value="Cancelar" onclick="wdlgAgregarPersona.hide()" type="reset"/>
+                        </p:scrollPanel>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog id="dlgInsertarDependencia" widgetVar="wdInsertarDependencia" header="Informacion dependencia" showEffect="clip" hideEffect="clip">  
+                    <h:form id="FrmdependenciaInsertar">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:panelGrid id="eventDetails" columns="2">  
+                            <h:outputText value="Dependencia:"/>
+                            <p:selectOneMenu id="cboDpI" value="#{personaC.objDependenciaI.intCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione Dependencia" >  
+                                <f:selectItem itemLabel="Seleccione Dependencia" itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionDependenciaC.lstDependencia}" var="dp" 
+                                               itemLabel="#{dp.strNombre}" itemValue="#{dp.intCodigo}" />                             
+                            </p:selectOneMenu> 
+                            <h:outputText value="Fecha Ingreso:"/>
+                            <p:calendar id="dIniI" navigator="true"  value="#{personaC.objCRelacionDependenciaI.dtFechaInicio}" required="true" >
+                            </p:calendar>
+                            <h:outputText value="Fecha Fin:"/>
+                            <p:calendar id="dfinI"  navigator="true" value="#{personaC.objCRelacionDependenciaI.dtFechaFin}" required="true">
+                            </p:calendar>
+                            <h:outputText value="Tiene Fin:"/>
+                            <p:selectOneRadio id="optionsI" value="#{personaC.objCRelacionDependenciaI.blTieneFechaFin}">  
+                                <f:selectItem itemLabel="Si" itemValue="true" />  
+                                <f:selectItem itemLabel="No" itemValue="false" />  
+                            </p:selectOneRadio>  
+                            <h:outputText value="Codigo Biometrico:"/>
+                            <p:inputText id="cbI" value="#{personaC.objCRelacionDependenciaI.strCodigoBiometrico}" required="true"
+                                         requiredMessage="Ingrese el Código Biométrico"/>
+                            <f:facet name="footer">  
+                                <p:commandButton value="Aceptar" action="#{personaC.insertarDependenciaTabla()}" 
+                                                 process="@this cboDpI dIniI dfinI optionsI cbI" disabled="false" 
+                                                 update=":frmAgregarPersona:detalleTableDependenciaI"/>
+                                <p:commandButton value="Cancelar" onclick="wdInsertarDependencia.hide()" type="reset"/>
+                            </f:facet> 
+                        </h:panelGrid>  
+                    </h:form>
+                </p:dialog>  
+                <p:dialog id="dlgLugarProcedenciaInsertar" widgetVar="wdLugarProcedenciaInsertar" header="Informacion Lugar Procedencia" showEffect="clip" hideEffect="clip">  
+                    <h:form id="frmParroquiaI">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:panelGrid id="eventDetailsI" columns="2">  
+
+                            <h:outputText value="Pais:"/>
+                            <p:selectOneMenu id="cmbPaisI" value="#{gestionParroquiaC.parroquiaActual.paCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione un pais" >  
+                                <f:selectItem itemLabel="Seleccione un pais " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionPaisC.lstPais}" var="pais" itemLabel="#{pais.nombre}" itemValue="#{pais.lgCodigo}" />                             
+                                <p:ajax event="change" listener="#{gestionParroquiaC.cargarProvincias()}" update="cbocantonI"/>
+                            </p:selectOneMenu> 
+
+                            <h:outputText value="Provincia:"/>
+                            <p:selectOneMenu id="cbocantonI" value="#{gestionParroquiaC.parroquiaActual.proCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione provincia" >  
+                                <f:selectItem itemLabel="Seleccione una provincia " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionParroquiaC.provincias}" var="pro" itemLabel="#{pro.strNombre}" itemValue="#{pro.lgCodigo}" />                             
+                                <p:ajax event="change" listener="#{gestionParroquiaC.cargaCiudad()}" update="cboCiudadI"/>
+                            </p:selectOneMenu> 
+                            <h:outputText value="Canton:"/>
+                            <p:selectOneMenu id="cboCiudadI" value="#{gestionParroquiaC.parroquiaActual.ciuCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione Cantón" >  
+                                <f:selectItem itemLabel="Seleccione un Cantón " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionParroquiaC.cantones}" var="can" itemLabel="#{can.strNombre}" itemValue="#{can.lgCodigo}" />                             
+                                <p:ajax event="change" listener="#{gestionParroquiaC.cargaParroquiasCiudad()}" update="cboParrI"/>
+                            </p:selectOneMenu> 
+
+                            <h:outputText value="Parroquia:"/>
+                            <p:selectOneMenu id="cboParrI" value="#{personaC.objParroquiaI.lgCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione Parroquia" >  
+                                <f:selectItem itemLabel="Seleccione una Parroquia " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionParroquiaC.lstParroquias1}" var="par" itemLabel="#{par.strNombre}" itemValue="#{par.lgCodigo}" />                             
+                                <!--<p:ajax event="change" listener="#gestionParroquiaC.cargarProvincias()}" update="cbocanton"/>-->
+                            </p:selectOneMenu> 
+                            <f:facet name="footer">  
+                                <p:commandButton value="Aceptar" action="#{personaC.insertarLugarProcedencia()}" 
+                                                 process="@this cboParrI" disabled="false" update=":frmAgregarPersona:pnDetallesPaisI"/>
+                                <p:commandButton value="Cancelar" onclick="wdLugarProcedenciaInsertar.hide()" type="reset"/>
+                            </f:facet> 
+                        </h:panelGrid>  
+                    </h:form>
+                </p:dialog>  
+                <p:dialog id="dlgEditarPersona" header="Edita Persona" widgetVar="wdlgEditarPersona" modal="true" closable="false" 
+                          resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+
+                    <h:form id="frmEditarPersona">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:scrollPanel style="width:800px;height:400px" mode="native">
+                            <p:panelGrid id="pngEditarPersona" columns="4">
+                                <h:outputText value="Nombres:"/>
+                                <p:inputText id="txtNombre" value="#{personaC.personaSel.strNombres}"  required="true" />
+
+                                <h:outputText value="Apellidos:"/>
+                                <p:inputText id="txtApellido" value="#{personaC.personaSel.strApellidos}" required="true"  />
+
+                                <h:outputText value="Cédula:"/>
+                                <p:inputText id="txtCed" value="#{personaC.personaSel.strIdentificacion}"  required="true" />
+
+                                <h:outputText value="Tipo Identificacion:"/>
+                                <p:inputText id="txtTipoI" value="#{personaC.personaSel.strTipoIdentificacion}" required="true" />
+
+                                <h:outputText value="E-mail"/>
+                                <p:inputText id="txtEmail" value="#{personaC.personaSel.strMail}" required="true"  />
+
+                                <h:outputText value="Telefono Domicilio:"/>
+                                <p:inputText id="txtTelefono" value="#{personaC.personaSel.strTelefonoCasa}" required="true"  />
+
+                                <h:outputText value="Telefono Oficina:"/>
+                                <p:inputText id="txtTeloficina" value="#{personaC.personaSel.strTelefonoOficina}" required="true" />
+
+                                <h:outputText value="Celular:"/>
+                                <p:inputText id="txtCel" value="#{personaC.personaSel.strTelefonoCelular}" />
+
+                                <h:outputText value="Fecha Nacimiento:"/>
+                                <p:calendar id="dnna" value="#{personaC.personaSel.dtFechaNacimiento}" required="true"/>         
+
+                                <h:outputText value="Capacidades:"/>
+                                <p:selectOneRadio  id="cbmCap" value="#{personaC.personaSel.blCapacidadesDiferentes}"  required="true" >  
+                                    <f:selectItem itemLabel="Si" itemValue="true" />  
+                                    <f:selectItem itemLabel="No" itemValue="false" />  
+                                </p:selectOneRadio>
+
+                                <h:outputText value="Dir. Calle Principal:"/>
+                                <p:inputText id="txtDicC" value="#{personaC.personaSel.strDirCallePrincipal}" required="true" />
+
+                                <h:outputText value="Dir. Calle Trans:"/>
+                                <p:inputText id="txtDicT" value="#{personaC.personaSel.strDirCalleTrans}" required="true" />
+
+                                <h:outputText value="Dir. Número:"/>
+                                <p:inputText id="txtDirN" value="#{personaC.personaSel.strDirNumero}" required="true" />
+
+                                <h:outputText value="Dir. Referencia:"/>
+                                <p:inputText  id="txtDirR" value="#{personaC.personaSel.strDirReferencia}" requiredMessage="Referencia" required="true" />
+
+
+
+                                <h:outputText value="Tipo Sangre:"/>
+                                <p:selectOneMenu id="cboTsa" value="#{personaC.objTipoSangre.lgCodigo}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Tipo Sangre" >  
+                                    <f:selectItem itemLabel="Seleccione Tipo Sangre" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionTipoSangreC.lstTipoSangres}" var="tps" itemLabel="#{tps.strNombre}" itemValue="#{tps.lgCodigo}" />                             
+
+                                </p:selectOneMenu> 
+
+                                <h:outputText value="Estado Civil:"/>
+                                <p:selectOneMenu id="cboEca" value="#{personaC.objEstCivil.lgCodigo}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Estado Civil" >  
+                                    <f:selectItem itemLabel="Seleccione Estado Civil" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionEstadoCivilC.lstEstadoCivil}" var="ec" itemLabel="#{ec.strNombre}" itemValue="#{ec.lgCodigo}" />                             
+
+                                </p:selectOneMenu> 
+
+                                <h:outputText value="Etnia:"/>
+                                <p:selectOneMenu id="cboEta" value="#{personaC.objEtnia.lgCodigo}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Etnia" >  
+                                    <f:selectItem itemLabel="Seleccione Etnia" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionEtniaC.lsEtnia}" var="et" itemLabel="#{et.strNombre}" itemValue="#{et.lgCodigo}" />                             
+
+                                </p:selectOneMenu> 
+
+                                <h:outputText value="Genero:"/>
+                                <p:selectOneMenu id="cboGna" value="#{personaC.objGenero.lgCodigo}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Etnia" >  
+                                    <f:selectItem itemLabel="Seleccione Etnia" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionGeneroC.lstGenero}" var="gr" itemLabel="#{gr.strNombre}" itemValue="#{gr.lgCodigo}" />                             
+
+                                </p:selectOneMenu> 
+
+
+                                <h:outputText value="Cargo Administrativo:"/>
+
+                                <p:selectOneMenu id="cboCarA" value="#{personaC.objCargoAdministrativoP.intEstado}" required="true" 
+                                                 style="width:200px"
+                                                 requiredMessage="Seleccione Cargo Administrativo" >  
+                                    <f:selectItem itemLabel="Seleccione Cargo Administrativo" itemValue="#{null}" />  
+                                    <f:selectItems value="#{gestionCargoAdministrativoC.lstCargoAdministrativos}" var="ca" itemLabel="#{ca.strNombre}" itemValue="#{ca.intCodigo}" />                             
+                                </p:selectOneMenu> 
+
+                            </p:panelGrid>
+
+
+
+                            <p:panelGrid columns="1" style="width:100%" id="lgProcedencia">
+                                <f:facet name="header">  
+                                    <p:row>  
+                                        <p:column colspan="2">Detalle de lugar procedencia </p:column>  
+                                    </p:row>  
+                                </f:facet> 
+                                <p:row>  
+                                    <p:column colspan="2"> <h:outputText value=""/></p:column>
+                                </p:row> 
+                                <p:panelGrid id="pnDetallesPais" columns="1" style="width:100%">
+                                    <p:dataTable id="detalleTable" value="#{personaC.lstDatosPais}"  var="datos"
+                                                 rowKey="#{datos.objParroquia.lgCodigo}" selectionMode="single" >
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Pais" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objPais.nombre}" />  
+                                        </p:column> 
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Provincia" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objProv.strNombre}" />  
+                                        </p:column> 
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Canton" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objCanton.strNombre}" />  
+                                        </p:column>
+                                        <p:column>  
+                                            <f:facet name="header">  
+                                                <h:outputText value="Parroquia" />  
+                                            </f:facet>  
+                                            <h:outputText value="#{datos.objParroquia.strNombre}" />  
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandButton id="btnEditar" icon="ui-icon-pencil"  title="Editar" 
+                                                             action="#{personaC.preparaEditarParroquia()}" process="@this"
+                                                             update=":dlgLugarProcedencia" oncomplete="PF('wdLugarProcedencia').show()"
+                                                             >                                   
+                                                <f:setPropertyActionListener value="#{persona}" target="#{personaC.objParroquiaSel}"/>
+                                            </p:commandButton>
+                                        </p:column>
+
+                                    </p:dataTable>  
+                                </p:panelGrid>
+
+                                <p:panelGrid columns="1" style="width:100%" id="lgDependencia">
+                                    <f:facet name="header">  
+                                        <p:row>  
+                                            <p:column colspan="2">Datos Dependencia</p:column>  
+                                        </p:row>  
+                                    </f:facet> 
+                                    <p:row>  
+                                        <p:column colspan="2"> <h:outputText value=""/></p:column>
+                                    </p:row> 
+
+                                    <p:panelGrid id="pnDetalleDependencia" columns="1" style="width:100%">
+                                        <p:dataTable id="detalleTableDependencia" value="#{personaC.lstRelacioniDependencia}"  var="dependencia"
+                                                     rowKey="#{dependencia.lgCodigo}" selectionMode="single" >
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Nombre Dependencia" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{dependencia.objCodigoDepencia.strNombre}" />  
+                                            </p:column> 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Fecha Inicio" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{dependencia.dtFechaInicio}" />  
+                                            </p:column> 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Fecha Fin" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{dependencia.dtFechaFin}" />  
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandButton id="btnEditar" icon="ui-icon-pencil"  title="Editar" 
+                                                                 action="#{personaC.preparaEditarDependencia()}" process="@this"
+                                                                 update=":dlgEditarDependencia" oncomplete="PF('wdEditarDependencia').show()">
+                                                    <f:setPropertyActionListener value="#{dependencia}" target="#{personaC.objCRelacionDependenciaSel}"/>   
+
+                                                </p:commandButton>
+                                            </p:column>
+
+                                        </p:dataTable>  
+                                    </p:panelGrid>
+                                </p:panelGrid>
+                            </p:panelGrid>
+                            <p:commandButton value="Aceptar"  action="#{personaC.actualizarPersona()}"
+                                             process="@this txtNombre txtApellido txtCed txtTipoI txtEmail txtTelefono txtTeloficina txtCel dnna cbmCap txtDicC  txtDicT txtDirN txtDirR"
+                                             update=":frmTablaPersonas:tblTablaPersonas" />
+                            <p:commandButton value="Cancelar" onclick="wdlgEditarPersona.hide()" type="reset"/>
+                        </p:scrollPanel>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog id="dlgEliminarPersona" header="Elimina Persona" widgetVar="wdlgEditarDependencia" modal="true" closable="false" 
+                          resizable="false"
+                          showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarPersona">
+
+                        <h:outputText value="¿Desea Eliminar la Persona?"/>
+                        <p:panelGrid id="pngEliminarPersona" columns="2">
+
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{gestionPersonaC.eliminarPersona()}" 
+                                         update=":frmTablaPersonas:tblTablaPersonas"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarPersona.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+                <p:dialog id="dlgEditarDependencia" widgetVar="wdEditarDependencia" header="Informacion dependencia" showEffect="clip" hideEffect="clip">  
+                    <h:form id="Frmdependencia">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:panelGrid id="eventDetails" columns="2">  
+
+
+                            <h:outputText value="Dependencia:"/>
+                            <p:selectOneMenu id="cboDp" value="#{personaC.codigoDep}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione Dependencia" >  
+                                <f:selectItem itemLabel="Seleccione Dependencia" itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionDependenciaC.lstDependencia}" var="dp" itemLabel="#{dp.objCodigoInstitucion.nombre}-#{dp.strNombre}" itemValue="#{dp.intCodigo}" />                             
+                            </p:selectOneMenu> 
+
+
+                            <h:outputText value="Fecha Ingreso:"/>
+                            <p:calendar id="dIni" value="#{personaC.objCRelacionDependenciaSel.dtFechaInicio}" required="true" >
+
+                            </p:calendar>
+
+
+                            <h:outputText value="Fecha Fin:"/>
+                            <p:calendar id="dfin" value="#{personaC.objCRelacionDependenciaSel.dtFechaFin}" required="true">
+
+                            </p:calendar>
+
+
+                            <h:outputText value="Tiene Fin:"/>
+                            <p:selectOneRadio id="options" value="#{personaC.objCRelacionDependenciaSel.blTieneFechaFin}">  
+                                <f:selectItem itemLabel="Si" itemValue="true" />  
+                                <f:selectItem itemLabel="No" itemValue="false" />  
+
+                            </p:selectOneRadio>  
+
+                            <h:outputText value="Codigo Biometrico:"/>
+                            <p:inputText id="cb" value="#{personaC.strCodigoBiometrico}" />
+                            <f:facet name="footer">  
+                                <p:commandButton value="Aceptar" action="#{personaC.actualizarDependencia()}" 
+                                                 process="@this cb cboDp" disabled="false" update=":frmEditarPersona:detalleTableDependencia"/>
+                                <p:commandButton value="Cancelar" onclick="wdEditarDependencia.hide()" type="reset"/>
+                            </f:facet> 
+                        </h:panelGrid>  
+                    </h:form>
+                </p:dialog>  
+
+                <p:dialog id="dlgLugarProcedencia" widgetVar="wdLugarProcedencia" header="Informacion dependencia" showEffect="clip" hideEffect="clip">  
+                    <h:form id="frmParroquia">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:panelGrid id="eventDetails" columns="2">  
+
+                            <h:outputText value="Pais:"/>
+                            <p:selectOneMenu id="cmbPais" value="#{gestionParroquiaC.parroquiaActual.paCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione un pais" >  
+                                <f:selectItem itemLabel="Seleccione un pais " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionPaisC.lstPais}" var="pais" itemLabel="#{pais.nombre}" itemValue="#{pais.lgCodigo}" />                             
+                                <p:ajax event="change" listener="#{gestionParroquiaC.cargarProvincias()}" update="cbocanton"/>
+                            </p:selectOneMenu> 
+
+                            <h:outputText value="Provincia:"/>
+                            <p:selectOneMenu id="cbocanton" value="#{gestionParroquiaC.parroquiaActual.proCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione provincia" >  
+                                <f:selectItem itemLabel="Seleccione una provincia " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionParroquiaC.provincias}" var="pro" itemLabel="#{pro.strNombre}" itemValue="#{pro.lgCodigo}" />                             
+                                <p:ajax event="change" listener="#{gestionParroquiaC.cargaCiudad()}" update="cboCiudad"/>
+                            </p:selectOneMenu> 
+
+
+                            <h:outputText value="Canton:"/>
+                            <p:selectOneMenu id="cboCiudad" value="#{gestionParroquiaC.parroquiaActual.ciuCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione Cantón" >  
+                                <f:selectItem itemLabel="Seleccione un Cantón " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionParroquiaC.cantones}" var="can" itemLabel="#{can.strNombre}" itemValue="#{can.lgCodigo}" />                             
+                                <p:ajax event="change" listener="#{gestionParroquiaC.cargaParroquiasCiudad()}" update="cboParr"/>
+                            </p:selectOneMenu> 
+
+                            <h:outputText value="Parroquia:"/>
+                            <p:selectOneMenu id="cboParr" value="#{personaC.objParroquia.lgCodigo}" required="true" 
+                                             style="width:200px"
+                                             requiredMessage="Seleccione Parroquia" >  
+                                <f:selectItem itemLabel="Seleccione una Parroquia " itemValue="#{null}" />  
+                                <f:selectItems value="#{gestionParroquiaC.lstParroquias1}" var="par" itemLabel="#{par.strNombre}" itemValue="#{par.lgCodigo}" />                             
+                                <!--<p:ajax event="change" listener="#gestionParroquiaC.cargarProvincias()}" update="cbocanton"/>-->
+                            </p:selectOneMenu> 
+                            <f:facet name="footer">  
+                                <p:commandButton value="Aceptar" action="#{personaC.actualizarLugarProcedencia()}" 
+                                                 process="@this cboParr" disabled="false" update=":frmEditarPersona:detalleTable"/>
+                                <p:commandButton value="Cancelar" onclick="wdLugarProcedencia.hide()" type="reset"/>
+                            </f:facet> 
+                        </h:panelGrid>  
+                    </h:form>
+                </p:dialog>  
+
+
+                <p:dialog header="Busqueda de Personas"  widgetVar="wdialogoBusquedaPersonas"  
+                          id="dialogoBusquedaPersonas" resizable="false" modal="true">
+                    <p:panel id="pnlContenedorBusquedaPersonas">
+                        <h:form id="formPersonas">  
+                            <p:panelGrid id="pngBusqueda" columns="4">
+                                <h:outputText id="otxtBuscar" value="Buscar por:"/>
+                                <p:selectOneMenu id="cmbCriterioBusqueda" value="#{personaC.criterioBusquedaTitular}">
+                                    <f:selectItem itemValue="#{null}" itemLabel="Seleccione una opción"/>
+                                    <f:selectItem itemValue="cedula" itemLabel="CEDULA"/>
+                                    <f:selectItem itemValue="apellido" itemLabel="APELLIDOS"/>
+                                </p:selectOneMenu>
+                                <p:inputText id="txtBuscar" value="#{personaC.datoBusquedaP}"/>
+                                <p:commandButton value="Aceptar" update="pTabla" 
+                                                 action="#{personaC.cargarDatosPersonaConsulta()}"  
+                                                 process="@this txtBuscar cmbCriterioBusqueda " />
+                            </p:panelGrid>
+                            <p:panel id="pTabla">
+                                <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                                <p:dataTable var="persona" value="#{personaC.dm.lazyModel}" paginator="true" rows="5"  
+                                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} 
+                                             {CurrentPageReport} {NextPageLink} {LastPageLink}"  
+                                             rowsPerPageTemplate="5,10" selectionMode="single"    
+                                             selection="#{personaC.dm.personaSel}"
+                                             id="personaTable" sortBy="#{persona.strApellidos}"
+                                             rowKey="#{persona.lgCodigo}" lazy="true">  
+                                    <p:column headerText="Código" sortBy="#{persona.lgCodigo}">  
+                                        <h:outputText value="#{persona.lgCodigo}" />  
+                                    </p:column>  
+
+                                    <p:column headerText="Cédula" sortBy="#{persona.strIdentificacion}">  
+                                        <h:outputText value="#{persona.strIdentificacion}" />  
+                                    </p:column>  
+
+                                    <p:column headerText="Apellidos" sortBy="#{persona.strApellidos}">  
+                                        <h:outputText value="#{persona.strApellidos}" />  
+                                    </p:column>  
+
+                                    <p:column headerText="Nombre" sortBy="#{persona.strNombres}">  
+                                        <h:outputText value="#{persona.strNombres}" />  
+                                    </p:column>  
+                                </p:dataTable>  
+                                <p:commandButton value="Aceptar"  action="#{personaC.preparaEditarBusquedaPersona()}"  
+                                                 update=":dlgEditarPersona" />
+                            </p:panel>
+                        </h:form>  
+                    </p:panel>
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>    
+            </ui:define>
+        </ui:composition>  
+    </h:body>
+</html>

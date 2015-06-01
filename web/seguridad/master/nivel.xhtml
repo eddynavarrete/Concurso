@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Niveles</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Niveles</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmnivel">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlNivel">
+                        <p:dataTable id="tblNivel" value="#{nivelControlador.lstNiveles}" 
+                                     var="nivel" 
+                                     paginator="true" rows="10" rowKey="#{nivel.codigo}" selectionMode="single" 
+                                     selection="#{nivelControlador.nivelSel}">
+                            
+                            
+                            <p:column filterBy="#{nivel.codigo_escuela.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{nivel.codigo_escuela.nombre}" headerText="Escuela">
+                                <h:outputText value="#{nivel.codigo_escuela.nombre}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{nivel.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{nivel.nombre}" headerText="Nombre">
+                                <h:outputText value="#{nivel.nombre}"/>
+                            </p:column>
+                            
+                                                       
+                            <p:column filterBy="#{nivel.paralelo}" filterMatchMode="startsWith" 
+                                      sortBy="#{nivel.paralelo}" headerText="Paralelo">
+                                <h:outputText value="#{nivel.paralelo}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{nivel.modalidad}" filterMatchMode="startsWith" 
+                                      sortBy="#{nivel.modalidad}" headerText="Modalidad">
+                                <h:outputText value="#{nivel.modalidad}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{nivel.codigo_sicoa}" filterMatchMode="startsWith" 
+                                      sortBy="#{nivel.codigo_sicoa}" headerText="Codigo sicoa">
+                                <h:outputText value="#{nivel.codigo_sicoa}"/>
+                            </p:column>                       
+                            
+                            <p:column exportable="false">
+                                <p:commandButton id="btnEditarNivel" icon="ui-icon-pencil"  title="Editar Nivel" 
+                                                 oncomplete="wdlgEditarNivel.show()" 
+                                                 process="@this" update=":dlgEditarNivel, @form">                                   
+                                    <f:setPropertyActionListener value="#{nivel}" 
+                                                                 target="#{nivelControlador.nivelSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarNivel" icon="ui-icon-close"  title="Eliminar Nivel"
+                                                 oncomplete="wdlgEliminarNivel.show()" 
+                                                 update=":dlgEliminarNivel">                                   
+                                    <f:setPropertyActionListener value="#{nivel}" 
+                                                                 target="#{nivelControlador.nivelSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoNivel" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoNivel.show()" title="Nuevo Nivel"/>  
+                                
+                                <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblNivel" fileName="Nivel" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblNivel" fileName="Nivel" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblNivel" fileName="Nivel" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblNivel" fileName="Nivel" pageOnly="true" />
+                                </h:commandLink>
+                                
+                                
+                                
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoNivel" header="Nueva Nivel" widgetVar="wdlgNuevoNivel" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                    
+                    
+                    
+                    <h:form id="frmNuevoNivel">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoNivel" columns="2">
+                            
+                            
+                             <h:outputText value="Codigo sicoa"/>
+                             <p:inputText value="#{nivelControlador.objNivel.codigo_sicoa}" title="ej: 1" 
+                                         required="true" requiredMessage="Ingrese el codigo sicoa"/>
+                            
+                            
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{nivelControlador.objNivel.nombre}" title="ej: Primer" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Paralelo:"/>
+                            <p:inputText value="#{nivelControlador.objNivel.paralelo}" title="ej: A"
+                                         required="true" requiredMessage="Ingrese el paralelo"/>
+                            
+                            <h:outputText value="Modalidad:"/>
+                            <p:selectOneMenu id="cmbModalidad" value="#{nivelControlador.objNivel.modalidad}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Anual" itemValue="Anual"/>
+                                <f:selectItem itemLabel="Semestral" itemValue="Semestral"/>
+                            </p:selectOneMenu>
+                                
+                            <h:outputText id="otxtFacultad" value="Facultad:"/>
+                            <p:selectOneMenu value="#{nivelControlador.valorFSeleccionada}">
+                                            <f:selectItem itemValue="#{null}" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{nivelControlador.lstFacultades}" var="facultades" 
+                                                           itemLabel="#{facultades.nombre}" itemValue="#{facultades.codigo}"/>
+                                            <p:ajax event="change" listener="#{nivelControlador.obtenerEscuelasDadoCodigoFacultad}" update="cmdEscuelitas"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText id="otxtEscuelas" value="Escuela:"/>                           
+                            <p:selectOneMenu id="cmdEscuelitas" value="#{nivelControlador.valorESeleccionada}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{nivelControlador.lstEscuelas}" var="escuelas" 
+                                                           itemLabel="#{escuelas.nombre}" itemValue="#{escuelas.codigo}"/> 
+                            </p:selectOneMenu>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{nivelControlador.insertarNivel()}"
+                                         update=":frmnivel:pnlNivel"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoNivel.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+
+                <p:dialog id="dlgEditarNivel" header="Editar Nivel" widgetVar="wdlgEditarNivel" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarNivel">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarNivel" columns="2">
+                           <h:outputText value="Codigo sicoa"/>
+                           <p:inputText value="#{nivelControlador.nivelSel.codigo_sicoa}" title="ej: 1" 
+                                         required="true" requiredMessage="Ingrese el codigo sicoa"/>
+                            
+                            
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{nivelControlador.nivelSel.nombre}" title="ej: Primer" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Paralelo:"/>
+                            <p:inputText value="#{nivelControlador.nivelSel.paralelo}" title="ej: A"
+                                         required="true" requiredMessage="Ingrese el paralelo"/>
+                            
+                            <h:outputText value="Modalidad:"/>
+                            <p:selectOneMenu id="cmbModalidad" value="#{nivelControlador.nivelSel.modalidad}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Anual" itemValue="Anual"/>
+                                <f:selectItem itemLabel="Semestral" itemValue="Semestral"/>
+                            </p:selectOneMenu>
+                            
+
+                            <h:outputText id="otxtFacultad" value="Facultad:"/>
+                            <p:selectOneMenu value="#{nivelControlador.valorFSeleccionada}">
+                                            <f:selectItem itemValue="#{null}" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{nivelControlador.lstFacultades}" var="facultades" 
+                                                           itemLabel="#{facultades.nombre}" itemValue="#{facultades.codigo}"/>
+                                            <p:ajax event="change" listener="#{nivelControlador.obtenerEscuelasDadoCodigoFacultad}" update="cmdEscuelitas"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText id="otxtEscuelas" value="Escuela:"/>                           
+                            <p:selectOneMenu id="cmdEscuelitas" value="#{nivelControlador.valorESeleccionada}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{nivelControlador.lstEscuelas}" var="escuelas" 
+                                                           itemLabel="#{escuelas.nombre}" itemValue="#{escuelas.codigo}"/> 
+                            </p:selectOneMenu>
+                            
+                            
+                            
+                            
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{nivelControlador.actualizarNivel()}" 
+                                         update=":frmnivel:pnlNivel"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarNivel.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarNivel" header="Eliminar Nivel" widgetVar="wdlgEliminarNivel" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarNivel">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Nivel?"/>
+                        <p:panelGrid id="pngEliminarNivel" columns="2">
+                            
+                            <h:outputText value="Codigo sicoa"/>
+                            <p:inputText value="#{nivelControlador.nivelSel.codigo_sicoa}" title="ej: 1" 
+                                         required="true" requiredMessage="Ingrese el codigo sicoa" disabled="true"/>
+                            
+                            
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{nivelControlador.nivelSel.nombre}" title="ej: Primer" 
+                                         required="true" requiredMessage="Ingrese el nombre" disabled="true"/>
+                            
+                            <h:outputText value="Paralelo:"/>
+                            <p:inputText value="#{nivelControlador.nivelSel.paralelo}" title="ej: A"
+                                         required="true" requiredMessage="Ingrese el paralelo" disabled="true"/>
+                            
+                            <h:outputText value="Modalidad:"/>
+                            <p:inputText value="#{nivelControlador.nivelSel.modalidad}" title="ej: semestral"
+                                         required="true" requiredMessage="Ingrese la modalidad" disabled="true"/>
+                            
+                            <h:outputText value="Escuela:"/>
+                            <h:inputText value="#{nivelControlador.nivelSel.codigo_escuela.nombre}"
+                                        disabled="true"/>
+                                                        
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{nivelControlador.eliminarNivel()}" 
+                                         update=":frmnivel:pnlNivel"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarNivel.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

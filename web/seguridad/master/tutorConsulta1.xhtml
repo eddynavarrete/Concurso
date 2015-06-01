@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>
+            <ui:define name="Gestion de Tutores">Gestión de Tutores</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Tutores</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+
+                <h:form id="frmtutor">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlTutor">
+                        <p:dataTable value="#{tutorControlador.lstTutor}" filteredValue="#{tutorControlador.lstTutorFilter}"
+                                     var="tutor"  widgetVar="tutorTable" emptyMessage="Datos no encontrados"
+                                     paginator="true" rows="10" rowKey="#{tutor.codigo}" selectionMode="single" 
+                                     selection="#{tutorControlador.tutorSel}">
+
+
+
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <h:outputText value="Buscar:  "/>
+                                    <p:inputText id="globalFilter" onkeyup="tutorTable.filter();" style="width:150px" placeholder="Buscar..." />
+                                </p:outputPanel>
+                            </f:facet>
+
+
+
+
+
+                            <p:column  filterBy="#{tutor.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" headerText="Facultad" filterOptions="#{tutor.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" filterMatchMode="exact" >
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="tutorTable.filter();" >
+                                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" noSelectionOption="true" />
+                                        <f:selectItems value="#{tutorControlador.lstFacultades}" var="facultades" itemLabel="#{facultades.nombre}" />
+                                    </p:selectOneMenu>
+                                </f:facet>
+                                <h:outputText value="#{tutor.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" />
+                            </p:column>
+
+
+
+
+                            <p:column filterBy="#{tutor.codigo_nivel.codigo_escuela.nombre}" filterMatchMode="exact" 
+                                      sortBy="#{tutor.codigo_nivel.codigo_escuela.nombre}" headerText="Escuela">
+                                <h:outputText value="#{tutor.codigo_nivel.codigo_escuela.nombre}"/>
+                            </p:column>
+
+                            <p:column filterBy="#{tutor.codigo_nivel.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_nivel.nombre}" headerText="Nivel">
+                                <h:outputText value="#{tutor.codigo_nivel.nombre}"/>
+                            </p:column>
+
+
+
+                            <p:column filterBy="#{tutor.codigo_periodo.nombre}" filterMatchMode="#{tutorControlador.valorPSeleccionado}" 
+                                      sortBy="#{tutor.codigo_periodo.nombre}" headerText="Periodo">
+                                <h:outputText value="#{tutor.codigo_periodo.nombre}"/>
+                            </p:column>
+
+
+                            <p:column filterBy="#{tutor.codigo_usuario_rol.codigo_usuario.nombres}  #{tutor.codigo_usuario_rol.codigo_usuario.apellidos}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_usuario_rol.codigo_usuario.nombres}" headerText="Usuario">
+                                <h:outputText value="#{tutor.codigo_usuario_rol.codigo_usuario.nombres}  #{tutor.codigo_usuario_rol.codigo_usuario.apellidos}"/>
+                            </p:column>
+
+
+                            <p:column filterBy="#{tutor.codigo_usuario_rol.codigo_rol.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_usuario_rol.codigo_rol.nombre}" headerText="Rol">
+                                <h:outputText value="#{tutor.codigo_usuario_rol.codigo_rol.nombre}"/>
+                            </p:column>
+
+                            <p:column exportable="false">
+
+                                <p:commandButton id="btnVerTutor" value="Ver" icon="ui-icon-circle-plus" 
+                                                 oncomplete="wdlgEliminarTutor.show()" update=":dlgVerTutor" > 
+                                    <f:setPropertyActionListener value="#{tutor}" 
+                                                                 target="#{tutorControlador.tutorSel}"/>
+                                </p:commandButton>
+
+
+                            </p:column>
+
+
+                            <f:facet name="footer">  
+
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+
+
+
+
+
+            </ui:define>
+            <ui:define name="dialogos">
+
+
+
+
+                <p:dialog id="dlgVerTutor" header="Ver Tutor" widgetVar="wdlgEliminarTutor" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmVerTutor">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="Información del Tutor Asignado"/>
+                        <p:panelGrid id="pngVerTutor" columns="2">
+
+                            <h:outputText value="Facultad:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.codigo_escuela.codigo_facultad.nombre}"
+                                         disabled="true"/>
+
+                            <h:outputText value="Escuela:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.codigo_escuela.nombre}"
+                                         disabled="true"/>
+
+                            <h:outputText value="Nivel:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.nombre}"
+                                         disabled="true"/>
+
+                            <h:outputText value="Periodo:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_periodo.nombre}"
+                                         disabled="true"/>
+
+
+                            <h:outputText value="Tutor:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_usuario_rol.codigo_usuario.nombres} #{tutorControlador.tutorSel.codigo_usuario_rol.codigo_usuario.apellidos}"
+                                         disabled="true"/>  
+
+                            <h:outputText value="Rol del Usuario:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_usuario_rol.codigo_rol.nombre}"
+                                         disabled="true"/>  
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" onclick="wdlgEliminarTutor.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+
+
+
+
+
+
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

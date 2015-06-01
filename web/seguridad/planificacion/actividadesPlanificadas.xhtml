@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Actividades Planificadas</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+         <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Actividades Planificadas</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmActividadesPlanificadas">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlActividadesPlanificadas">
+                        <p:dataTable id="tblActividadesPlanificadas" value="#{actividadesPlanificadasControlador.actividadesplanificadas}" 
+                                     var="actividadesplanificadas" 
+                                     paginator="true" rows="10" rowKey="#{actividadesplanificadas.codigo}" selectionMode="single" 
+                                     selection="#{actividadesPlanificadasControlador.seleccionarAP}">
+                            
+                            <p:column filterBy="#{actividadesplanificadas.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{actividadesplanificadas.nombre}" headerText="Nombre">
+                                <h:outputText value="#{actividadesplanificadas.nombre}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{actividadesplanificadas.descripcion}" filterMatchMode="startsWith" 
+                                      sortBy="#{actividadesplanificadas.descripcion}" headerText="Descripción">
+                                <h:outputText value="#{actividadesplanificadas.descripcion}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{actividadesplanificadas.fecha}" filterMatchMode="startsWith" 
+                                      sortBy="#{actividadesplanificadas.fecha}" headerText="Fecha">
+                                <h:outputText value="#{actividadesplanificadas.fecha}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{actividadesplanificadas.observacion}" filterMatchMode="startsWith" 
+                                      sortBy="#{actividadesplanificadas.observacion}" headerText="Observación">
+                                <h:outputText value="#{actividadesplanificadas.observacion}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{actividadesplanificadas.estado}" filterMatchMode="startsWith" 
+                                      sortBy="#{actividadesplanificadas.estado}" headerText="Estado">
+                                <h:outputText value="#{actividadesplanificadas.estado==0 ?'INACTIVO':'ACTIVO'}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{actividadesplanificadas.codigo_tutor}" filterMatchMode="startsWith" 
+                                      sortBy="#{actividadesplanificadas.codigo_tutor}">
+                                <f:facet name="header">
+                                    <h:outputText value="Tutor"/>
+                                </f:facet>
+                                <h:outputText value="#{actividadesplanificadas.codigo_tutor.codigo}"/>
+                            </p:column>
+                            
+                            
+                            <p:column exportable="false">
+                                <p:commandButton id="btnEditarActividadesPlanificadas" icon="ui-icon-pencil"  title="Editar ActividadesPlanificadas" 
+                                                 oncomplete="wdlgEditarActividadesPlanificadas.show()" 
+                                                 process="@this" update=":dlgEditarActividadesPlanificadas, @form">                                   
+                                    <f:setPropertyActionListener value="#{actividadesplanificadas}" 
+                                                                 target="#{actividadesPlanificadasControlador.seleccionarAP}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarActividadesPlanificadas" icon="ui-icon-close"  title="Eliminar ActividadesPlanificadas"
+                                                 oncomplete="wdlgEliminarActividadesPlanificadas.show()" 
+                                                 update=":dlgEliminarActividadesPlanificadas">                                   
+                                    <f:setPropertyActionListener value="#{actividadesplanificadas}" 
+                                                                 target="#{actividadesPlanificadasControlador.seleccionarAP}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoActividadesPlanificadas" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoActividadesPlanificadas.show()" title="Nueva Actividad Planificada"/>  
+                                
+                                <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblActividadesPlanificadas" fileName="ActividadesPlanificadas" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblActividadesPlanificadas" fileName="ActividadesPlanificadas" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblActividadesPlanificadas" fileName="ActividadesPlanificadas" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblActividadesPlanificadas" fileName="ActividadesPlanificadas" pageOnly="true" />
+                                </h:commandLink>
+                                
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoActividadesPlanificadas" header="Nuevo Actividades Planificadas" widgetVar="wdlgNuevoActividadesPlanificadas" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+
+                    <h:form id="frmNuevoActividadesPlanificadas">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoActividadesPlanificadas" columns="2">
+                            
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{actividadesPlanificadasControlador.actividadplanificada.nombre}" title="ej: Actividad 1" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{actividadesPlanificadasControlador.actividadplanificada.descripcion}" title="ej: Ninguna" 
+                                         required="true" requiredMessage="Ingrese la descripción"/>
+                                                        
+                            <h:outputText value="Fecha:"/>
+                            <p:calendar id="DateFechaFin" value="#{actividadesPlanificadasControlador.fechaAP}" title="ej: 01-01-2010"  
+                                        required="true" requiredMessage="El campo fecha fin es requerido" />
+                                                       
+                             <h:outputText value="Observaciones:"/>
+                             <p:inputText value="#{actividadesPlanificadasControlador.actividadplanificada.observacion}" title="ej: Ninguna"
+                                         required="true" requiredMessage="Ingrese observaciones"/>
+                             
+                             <h:outputText value="Estado:"/>
+                             <p:selectOneMenu id="cmbEstado" value="#{actividadesPlanificadasControlador.actividadplanificada.estado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                             
+                             
+                             <h:outputText value="Seleccione Tutor"/>
+                             <p:selectOneMenu id="cmbTutor" value="#{actividadesPlanificadasControlador.valorAPseleccionada}">
+                                <f:selectItem itemLabel="Elija un tutor" itemValue="#{null}"/>
+                                <f:selectItems value="#{actividadesPlanificadasControlador.tutores}" var="tutor" itemLabel="#{tutor.codigo}" itemValue="#{tutor.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{actividadesPlanificadasControlador.insertarActividadesPlanificadas()}" 
+                                         update=":frmActividadesPlanificadas:pnlActividadesPlanificadas"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoActividadesPlanificadas.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+                <p:dialog id="dlgEditarActividadesPlanificadas" header="Editar Actividades Planificadas" widgetVar="wdlgEditarActividadesPlanificadas" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarActividadesPlanificadas">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarActividadesPlanificadas" columns="2">
+
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{actividadesPlanificadasControlador.seleccionarAP.nombre}" title="ej: Actividad 1" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{actividadesPlanificadasControlador.seleccionarAP.descripcion}" title="ej: Ninguna" 
+                                         required="true" requiredMessage="Ingrese la descripción"/>
+                                                        
+                            <h:outputText value="Fecha:"/>
+                            <p:calendar id="DateFechaFin" value="#{actividadesPlanificadasControlador.fechaAP}" title="01-01-2010"  
+                                        required="true" requiredMessage="El campo fecha fin es requerido" />
+                                                       
+                             <h:outputText value="Observaciones:"/>
+                             <p:inputText value="#{actividadesPlanificadasControlador.seleccionarAP.observacion}" title="ej: Ninguna "
+                                         required="true" requiredMessage="Ingrese observaciones"/>
+                             
+                             <h:outputText value="Estado:"/>
+                             <p:selectOneMenu id="cmbEstado" value="#{actividadesPlanificadasControlador.seleccionarAP.estado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>  
+                            <h:outputText value="Seleccione Tutor"/>
+                            <p:selectOneMenu id="cmbTutor" value="#{actividadesPlanificadasControlador.seleccionarAP.codigo_tutor.codigo}">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItems value="#{actividadesPlanificadasControlador.tutores}" var="tutor" itemLabel="#{tutor.codigo}" itemValue="#{tutor.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{actividadesPlanificadasControlador.actualizarActividadesPlanificadas()}" 
+                                         update=":frmActividadesPlanificadas:pnlActividadesPlanificadas"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarActividadesPlanificadas.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarActividadesPlanificadas" header="Eliminar Actividades Planificadas" widgetVar="wdlgEliminarActividadesPlanificadas" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarActividadesPlanificadas">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar la Actividades Planificadas?"/>
+                        <p:panelGrid id="pngEliminarActividadesPlanificadas" columns="2"> 
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{actividadesPlanificadasControlador.seleccionarAP.nombre}" title="ej: Actividad 1" 
+                                         required="true" requiredMessage="Ingrese el nombre" disabled="true"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{actividadesPlanificadasControlador.seleccionarAP.descripcion}" title="ej: Ninguna" 
+                                         required="true" requiredMessage="Ingrese la descripción" disabled="true"/>
+                                                        
+                            <h:outputText value="Fecha:"/>
+                            <p:calendar id="DateFechaFin" value="#{actividadesPlanificadasControlador.fechaAP}" title="01-01-2010"  
+                                        required="true" requiredMessage="El campo fecha fin es requerido" disabled="true"/>
+                                                       
+                             <h:outputText value="Observaciones:"/>
+                             <p:inputText value="#{actividadesPlanificadasControlador.seleccionarAP.observacion}" title="ej: Ninguna"
+                                         required="true" requiredMessage="Ingrese observaciones" disabled="true"/>
+                             
+                             <h:outputText value="Estado:"/>
+                             <p:selectOneMenu id="cmbEstado" value="#{actividadesPlanificadasControlador.seleccionarAP.estado}" 
+                                             required="true" requiredMessage="Elija una opción" disabled="true">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                             <h:outputText value="Tutor:"/>
+                             <h:outputText value="#{actividadesPlanificadasControlador.seleccionarAP.codigo_tutor.codigo}"/>
+                         </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{actividadesPlanificadasControlador.eliminarActividadesPlanificadas()}" />
+                           <p:commandButton value="Cancelar" onclick="wdlgEliminarActividadesPlanificadas.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

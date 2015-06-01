@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="Gestion de Tutores">Gestión de Tutores</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Tutores</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmTutorBuscar">
+                <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                <p:panelGrid id="pngTutorBuscar" columns="7">
+                     <h:outputText id="otxtFacultad" value="Facultad:"/>
+                            <p:selectOneMenu value="#{tutorControlador.valorFSeleccionada}">
+                                            <f:selectItem itemValue="#{null}" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstFacultades}" var="facultades" 
+                                                           itemLabel="#{facultades.nombre}" itemValue="#{facultades.codigo}"/>
+                                            <p:ajax event="change" listener="#{tutorControlador.obtenerEscuelasDadoCodigoFacultad()}" update="cmdEscuelitas, cmdNiveles"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText id="otxtEscuelas" value="Escuela:"/>                           
+                            <p:selectOneMenu id="cmdEscuelitas" value="#{tutorControlador.valorESeleccionada}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstEscuelas}" var="escuelas" 
+                                                           itemLabel="#{escuelas.nombre}" itemValue="#{escuelas.codigo}"/> 
+                                            <p:ajax event="change" listener="#{tutorControlador.obtenerNivelDadoCodigoEscuela()}" update="cmdNiveles"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText id="otxtNiveles" value="Nivel:"/>                           
+                            <p:selectOneMenu id="cmdNiveles" value="#{tutorControlador.valorNSeleccionado}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstNiveles}" var="niveles" 
+                                                           itemLabel="#{niveles.nombre} #{niveles.paralelo}" itemValue="#{niveles.codigo}"/>                
+                            </p:selectOneMenu>
+                                 <p:commandButton id="btnBuscar" value="Buscar" 
+                                              action="#{tutorControlador.buscarTutor()}" process="@form, @this" oncomplete="dlgBuscarTutor.show()" 
+                                                 update=":dlgBuscarTutor, @form">
+                            </p:commandButton>
+                            
+                            
+                            
+                            
+                            
+                </p:panelGrid>
+
+            </h:form>
+                
+                
+                
+                <br></br>
+                
+                    
+                <h:form id="frmtutor">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlTutor">
+                        <p:dataTable id="tblTutor" value="#{tutorControlador.lstTutor}" 
+                                     var="tutor" 
+                                     paginator="true" rows="10" rowKey="#{tutor.codigo}" selectionMode="single" 
+                                     selection="#{tutorControlador.tutorSel}">
+                             
+                            
+                            
+                            <p:column filterBy="#{tutor.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_nivel.codigo_escuela.codigo_facultad.nombre}" headerText="Facultad">
+                                <h:outputText value="#{tutor.codigo_nivel.codigo_escuela.codigo_facultad.nombre}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{tutor.codigo_nivel.codigo_escuela.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_nivel.codigo_escuela.nombre}" headerText="Escuela">
+                                <h:outputText value="#{tutor.codigo_nivel.codigo_escuela.nombre}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{tutor.codigo_nivel.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_nivel.nombre}" headerText="Nivel">
+                                <h:outputText value="#{tutor.codigo_nivel.nombre}"/>
+                            </p:column>
+                            
+                            
+                                                       
+                            <p:column filterBy="#{tutor.codigo_periodo.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_periodo.nombre}" headerText="Periodo">
+                                <h:outputText value="#{tutor.codigo_periodo.nombre}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{tutor.codigo_usuario_rol.codigo_usuario.nombres}  #{tutor.codigo_usuario_rol.codigo_usuario.apellidos}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_usuario_rol.codigo_usuario.nombres}" headerText="Usuario">
+                                <h:outputText value="#{tutor.codigo_usuario_rol.codigo_usuario.nombres}  #{tutor.codigo_usuario_rol.codigo_usuario.apellidos}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{tutor.codigo_usuario_rol.codigo_rol.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{tutor.codigo_usuario_rol.codigo_rol.nombre}" headerText="Rol">
+                                <h:outputText value="#{tutor.codigo_usuario_rol.codigo_rol.nombre}"/>
+                            </p:column>
+ 
+                            <p:column exportable="false">
+                                
+                                <p:commandButton id="btnVerTutor" value="Ver" icon="ui-icon-circle-plus" 
+                                                     oncomplete="wdlgEliminarTutor.show()" update=":dlgVerTutor" > 
+                                 <f:setPropertyActionListener value="#{tutor}" 
+                                                                 target="#{tutorControlador.tutorSel}"/>
+                                </p:commandButton>
+                                
+
+                                
+                                <p:commandButton id="btnEditarTutor" icon="ui-icon-pencil"  title="Editar Tutor" 
+                                                 oncomplete="wdlgEditarTutor.show()" 
+                                                 process="@this" update=":dlgEditarTutor, @form">                                   
+                                    <f:setPropertyActionListener value="#{tutor}" 
+                                                                 target="#{tutorControlador.tutorSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarTutor" icon="ui-icon-close"  title="Eliminar Tutor"
+                                                 oncomplete="wdlgEliminarTutor.show()" 
+                                                 update=":dlgEliminarTutor">                                   
+                                    <f:setPropertyActionListener value="#{tutor}" 
+                                                                 target="#{tutorControlador.tutorSel}"/>
+                                </p:commandButton>
+                            </p:column>
+
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoTutor" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoTutor.show()" title="Usuario"/>  
+                                
+                                <h:commandLink>
+                                    <img src="../../resources/images/excel.png" alt=""/>
+                                    <p:dataExporter type="xls" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/pdf.png" alt=""/>
+                                    <p:dataExporter type="pdf" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/csv.png" alt=""/>
+                                    <p:dataExporter type="csv" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <img src="../../resources/images/xml.png" alt=""/>
+                                    <p:dataExporter type="xml" target="tblTutor" fileName="Tutor" pageOnly="true" />
+                                </h:commandLink>
+                                
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+                
+                
+                
+                
+                
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoTutor" header="Nuevo Tutor" widgetVar="wdlgNuevoTutor" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                
+                    
+                    
+                    <h:form id="frmNuevoTutor">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+
+                        <p:panelGrid id="pngNuevoTutor" columns="2" >
+                     
+                        
+                        <h:outputText id="txtIdentificacion" value="Cédula Nº:" />
+                        <p:inputText size="30" value="#{tutorControlador.objUsuario.identificacion}" />
+                       
+                            
+                            <h:outputText id="txtApellidosDocente" value="Apellidos:" />
+                         <p:inputText id="txtApellidos" size="30" value="#{tutorControlador.objUsuario.apellidos}" />
+                       
+                       
+                        <h:outputText id="txtNombresDocente" value="Nombres:"/>
+                        <p:inputText size="30" value="#{tutorControlador.objUsuario.nombres}" />
+                        
+                       
+                       
+                        <h:outputText id="txtNombreCorto" value="Alias:"/>
+                        <p:inputText size="30" value="#{tutorControlador.objUsuario.nombre_corto}"/>
+                       
+                       
+                        <h:outputText id="txtMail" value="Correo electrónico:"/>
+                        <p:inputText size="30" value="#{tutorControlador.objUsuario.mail}"/>
+                          
+                             
+                        <h:outputText id="txtClave" value="Contraseña:"/>
+                        <p:password id="passClave" feedback="true" value="#{tutorControlador.objUsuario.clave}"/>
+                       
+                        <h:outputText id="txtClavePregunta" value="Clave Pregunta:"/>
+                        <p:selectOneMenu id="cmbClavePregunta" value="#{tutorControlador.objUsuario.clave_pregunta}"
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="¿Lugar de nacimiento de tu padre?" itemValue="Lugar de nacimiento de tu padre"/>
+                                <f:selectItem itemLabel="Equipo Favorito" itemValue="Equipo Favorito"/>
+                                <f:selectItem itemLabel="Colegio donde estudiaste" itemValue="Colegio donde estudiaste"/>
+                                <f:selectItem itemLabel="GRupo de música preferido" itemValue="GRupo de música preferido"/>
+                                <f:selectItem itemLabel="Restaurante favorito" itemValue="Restaurante favorito"/>
+                                <f:selectItem itemLabel="Marca de auto preferida" itemValue="Marca de auto preferida"/>
+                            </p:selectOneMenu>
+                        
+                         <h:outputText id="txtClaveRespuesta" value="Respuesta:"/>
+                         <p:inputText value="#{tutorControlador.objUsuario.clave_respuesta}" />
+                         
+                         <h:outputText value="Estado:"/>
+                         <p:selectOneMenu id="cmbEstado" value="#{tutorControlador.objUsuario.estado}"
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                            
+                            
+                           <h:outputText id="otxtFacultad" value="Facultad:"/>
+                            <p:selectOneMenu value="#{tutorControlador.valorFSeleccionada}">
+                                            <f:selectItem itemValue="#{null}" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstFacultades}" var="facultades" 
+                                                           itemLabel="#{facultades.nombre}" itemValue="#{facultades.codigo}"/>
+                                            <p:ajax event="change" listener="#{tutorControlador.obtenerEscuelasDadoCodigoFacultad()}" update="cmdEscuelitas"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText id="otxtEscuelas" value="Escuela:"/>                           
+                            <p:selectOneMenu id="cmdEscuelitas" value="#{tutorControlador.valorESeleccionada}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstEscuelas}" var="escuelas" 
+                                                           itemLabel="#{escuelas.nombre}" itemValue="#{escuelas.codigo}"/> 
+                                            <p:ajax event="change" listener="#{tutorControlador.obtenerNivelDadoCodigoEscuela()}" update="cmdEscuelitas, cmdNiveles"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText id="otxtNiveles" value="Nivel:"/>                           
+                            <p:selectOneMenu id="cmdNiveles" value="#{tutorControlador.valorNSeleccionado}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstNiveles}" var="niveles" 
+                                                           itemLabel="#{niveles.nombre} #{niveles.paralelo}" itemValue="#{niveles.codigo}"/> 
+                            </p:selectOneMenu>
+                            
+                            <h:outputText value="Periodo:"/>
+                            <p:selectOneMenu id="cmbPeriodo" value="#{tutorControlador.valorPSeleccionado}">
+                                <f:selectItem itemLabel="Elija un periodo" itemValue="#{null}"/>
+                                <f:selectItems value="#{tutorControlador.lstPeriodos}" var="periodo" 
+                                               itemLabel="#{periodo.nombre}" itemValue="#{periodo.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                            
+                            <h:outputText value="Rol de Usuario:"/>
+                            <p:selectOneMenu id="cmbRol" value="#{tutorControlador.valorRSeleccionado}">
+                                <f:selectItem itemLabel="Elija un rol de Usuario" itemValue="#{null}"/>
+                                <f:selectItems value="#{tutorControlador.lstRoles}" var="Rol" 
+                                               itemLabel="#{Rol.nombre}" itemValue="#{Rol.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                            </p:panelGrid>
+                                                  
+                        <p:commandButton value="Aceptar" action="#{tutorControlador.insertarUsuario_UsuarioRol_Tutor()}" 
+                                         update=":frmtutor:pnlTutor" process="@this, cmbClavePregunta,cmbEstado,cmdNiveles,cmbPeriodo,cmbRol,@form"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoTutor.hide(), dlgBuscarUsuario.hide()" type="reset"/>
+                        
+                        
+                    </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+
+                <p:dialog id="dlgEditarTutor" header="Editar Tutor" widgetVar="wdlgEditarTutor" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarTutor">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarTutor" columns="2">
+                          
+                            
+                            
+                            <h:outputText id="otxtFacultad" value="Facultad:"/>
+                            <p:selectOneMenu value="#{tutorControlador.valorFSeleccionada}">
+                                            <f:selectItem itemValue="#{null}" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstFacultades}" var="facultades" 
+                                                           itemLabel="#{facultades.nombre}" itemValue="#{facultades.codigo}"/>
+                                            <p:ajax event="change" listener="#{tutorControlador.obtenerEscuelasDadoCodigoFacultad()}" update="cmdEscuelitas"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText id="otxtEscuelas" value="Escuela:"/>                           
+                            <p:selectOneMenu id="cmdEscuelitas" value="#{tutorControlador.valorESeleccionada}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstEscuelas}" var="escuelas" 
+                                                           itemLabel="#{escuelas.nombre}" itemValue="#{escuelas.codigo}"/> 
+                                            <p:ajax event="change" listener="#{tutorControlador.obtenerNivelDadoCodigoEscuela()}" update="cmdEscuelitas, cmdNiveles"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText id="otxtNiveles" value="Nivel:"/>                           
+                            <p:selectOneMenu id="cmdNiveles" value="#{tutorControlador.valorNSeleccionado}">
+                                            <f:selectItem itemValue="0" itemLabel="--Elija una opción--"/>
+                                            <f:selectItems value="#{tutorControlador.lstNiveles}" var="niveles" 
+                                                           itemLabel="#{niveles.nombre} #{niveles.paralelo}" itemValue="#{niveles.codigo}"/> 
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Periodo:"/>
+                            <p:selectOneMenu id="cmbPeriodo" value="#{tutorControlador.valorPSeleccionado}">
+                                <f:selectItem itemLabel="Elija un periodo" itemValue="#{null}"/>
+                                <f:selectItems value="#{tutorControlador.lstPeriodos}" var="periodos" itemLabel="#{periodos.nombre}" itemValue="#{periodos.codigo}"/>
+                            </p:selectOneMenu>
+  
+                            <h:outputText value="Usuario:"/>
+                            <p:selectOneMenu id="cmbUsuario" value="#{tutorControlador.valorUSeleccionado}">
+                                <f:selectItem itemLabel="Elija un usuario" itemValue="#{null}"/>
+                                <f:selectItems value="#{tutorControlador.lstUsuario}" var="usuario" 
+                                               itemLabel="#{usuario.nombres} #{usuario.apellidos}" itemValue="#{usuario.codigo}"/>
+                                <p:ajax event="change" listener="#{tutorControlador.obtenerRolesDadoCodigoUsuario()}" update="cmbRoles"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText value="Rol del Usuario:"/>
+                            <p:selectOneMenu id="cmbRoles" value="#{tutorControlador.valorURSeleeccionado}">
+                                <f:selectItem itemLabel="Elija un rol de usuario" itemValue="#{null}"/>
+                                <f:selectItems value="#{tutorControlador.lstRoles}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol.codigo}"/>
+                            </p:selectOneMenu>
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{tutorControlador.actualizarTutor()}" 
+                                         update=":frmtutor:pnlTutor"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarTutor.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarTutor" header="Eliminar Tutor" widgetVar="wdlgEliminarTutor" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarTutor">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Tutor?"/>
+                        <p:panelGrid id="pngEliminarTutor" columns="2">
+                            
+                            <h:outputText value="Facultad:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.codigo_escuela.codigo_facultad.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Escuela:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.codigo_escuela.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Nivel:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Periodo:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_periodo.nombre}"
+                                        disabled="true"/>
+                            
+                            
+                            <h:outputText value="Usuario:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_usuario_rol.codigo_usuario.nombres} #{tutorControlador.tutorSel.codigo_usuario_rol.codigo_usuario.apellidos}"
+                                        disabled="true"/>  
+                            
+                            <h:outputText value="Rol del Usuario:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_usuario_rol.codigo_rol.nombre}"
+                                        disabled="true"/>                         
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{tutorControlador.eliminarTutor()}" 
+                                         update=":frmtutor:pnlTutor"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarTutor.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+                <p:dialog id="dlgVerTutor" header="Ver Tutor" widgetVar="wdlgEliminarTutor" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmVerTutor">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="Información del Tutor Asignado"/>
+                        <p:panelGrid id="pngVerTutor" columns="2">
+                            
+                            <h:outputText value="Facultad:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.codigo_escuela.codigo_facultad.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Escuela:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.codigo_escuela.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Nivel:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_nivel.nombre}"
+                                        disabled="true"/>
+                            
+                            <h:outputText value="Periodo:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_periodo.nombre}"
+                                        disabled="true"/>
+                            
+                            
+                            <h:outputText value="Usuario:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_usuario_rol.codigo_usuario.nombres} #{tutorControlador.tutorSel.codigo_usuario_rol.codigo_usuario.apellidos}"
+                                        disabled="true"/>  
+                            
+                            <h:outputText value="Rol del Usuario:"/>
+                            <h:inputText value="#{tutorControlador.tutorSel.codigo_usuario_rol.codigo_rol.nombre}"
+                                        disabled="true"/>  
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" onclick="wdlgEliminarTutor.hide()" type="reset"/>
+                        </h:form> 
+                </p:dialog>
+                
+
+                
+           <p:dialog id="dlgBuscarTutor" header="Datos Tutor asignado" widgetVar="dlgBuscarTutor" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmBuscarTutor">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="Información del Tutor Asignado"/>
+                        
+                        <br></br>
+                        
+                        <p:dataTable id="tblTutorBuscar" value="#{tutorControlador.objTutorBuscar}" 
+                                     var="tutorBuscar" >
+                           
+                            <p:column headerText="Facultad">
+                                <h:outputText value="#{tutorBuscar.codigo_nivel.codigo_escuela.codigo_facultad.nombre}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Escuela">
+                                <h:outputText value="#{tutorBuscar.codigo_nivel.codigo_escuela.nombre}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Nivel">
+                                <h:outputText value="#{tutorBuscar.codigo_nivel.nombre}"/>
+                            </p:column>
+                                                       
+                            <p:column headerText="Periodo">
+                                <h:outputText value="#{tutorBuscar.codigo_periodo.nombre}"/>
+                            </p:column>
+                            
+                            
+                            <p:column headerText="Usuario">
+                                <h:outputText value="#{tutorBuscar.codigo_usuario_rol.codigo_usuario.nombres}  #{tutorBuscar.codigo_usuario_rol.codigo_usuario.apellidos}"/>
+                            </p:column>
+                            
+                            
+                            <p:column headerText="Rol">
+                                <h:outputText value="#{tutorBuscar.codigo_usuario_rol.codigo_rol.nombre}"/>
+                            </p:column>
+                            
+                            
+ 
+                        </p:dataTable>
+                        <br></br>
+                        <p:commandButton value="Aceptar" onclick="dlgBuscarTutor.hide()" type="reset"/>
+                        
+                        
+                        
+                        </h:form> 
+                </p:dialog>
+                
+                
+                
+                
+                
+            <p:dialog id="dlgBuscarUsuario" header="Buscar Usuario" widgetVar="dlgBuscarUsuario" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmBuscarUsuario">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="Datos Usuario"/>
+                        <p:panelGrid id="pngBuscarUsuario" columns="3">
+                            
+                         <h:outputText id="txtIdDocente" value="Ingrese C.I. Docente:"/>
+                            <p:inputText value="#{tutorControlador.valorIdentificacion}"/>     
+
+                           <p:commandButton id="btnBuscar" value="Buscar" 
+                                            action="#{tutorControlador.buscarUsuarioDadoIdentificacion()}" process="@form" oncomplete="wdlgNuevoTutor.show()" 
+                                                 update="@form, @this,:dlgNuevoTutor">
+                            </p:commandButton>
+                            
+                        </p:panelGrid>
+                    </h:form> 
+                </p:dialog>
+                    
+                
+
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+
+
+

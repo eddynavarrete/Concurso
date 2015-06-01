@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Parametros</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Parametros</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmparametros">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlParametros">
+                        <p:dataTable id="tblParametros" value="#{parametrosControlador.lstParametros}" 
+                                     var="parametros" 
+                                     paginator="true" rows="10" rowKey="#{parametros}" selectionMode="single" 
+                                     selection="#{parametrosControlador.parametrosSel}">
+                            <p:column filterBy="#{parametros.descripcion}" filterMatchMode="startsWith" 
+                                      sortBy="#{parametros.descripcion}" headerText="Descripcion">
+                                <h:outputText value="#{parametros.descripcion}"/>
+                            </p:column>
+                                                     
+                            <p:column filterBy="#{parametros.valor_entero}" filterMatchMode="startsWith" 
+                                      sortBy="#{parametros.valor_entero}" headerText="Valor Entero">
+                                <h:outputText value="#{parametros.valor_entero}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{parametros.valor_doble}" filterMatchMode="startsWith" 
+                                      sortBy="#{parametros.valor_doble}" headerText="Valor Doble">
+                                <h:outputText value="#{parametros.valor_doble}"/>
+                            </p:column>
+                         
+                            
+                            <p:column filterBy="#{parametros.valor_texto}" filterMatchMode="startsWith" 
+                                      sortBy="#{parametros.valor_texto}" headerText="Valor Texto">
+                                <h:outputText value="#{parametros.valor_texto}"/>
+                            </p:column>
+                            
+                            <p:column>
+                                <p:commandButton id="btnEditarParametros" icon="ui-icon-pencil"  title="Editar Parametros" 
+                                                 oncomplete="wdlgEditarParametros.show()" 
+                                                 process="@this" update=":dlgEditarParametros, @form">                                   
+                                    <f:setPropertyActionListener value="#{parametros}" 
+                                                                 target="#{parametrosControlador.parametrosSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarParametros" icon="ui-icon-close"  title="Eliminar Parametros"
+                                                 oncomplete="wdlgEliminarParametros.show()" 
+                                                 update=":dlgEliminarParametros">                                   
+                                    <f:setPropertyActionListener value="#{parametros}" 
+                                                                 target="#{parametrosControlador.parametrosSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoParametros" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoParametros.show()" title="Nuevo Parametros"/>  
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoParametros" header="Nuevo Parametros" widgetVar="wdlgNuevoParametros"
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                    
+                    
+                    
+                    <h:form id="frmNuevoParametros">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoParametros" columns="2">
+                            
+                            
+                            <h:outputText value="Descripcion:"/>
+                            <p:inputText value="#{parametrosControlador.objParametros.descripcion}" title="ej: Descripcion" 
+                                         required="true" requiredMessage="Ingrese una descripcion"/>
+                            
+                            <h:outputText value="Valor entero:"/>
+                            <p:inputText value="#{parametrosControlador.objParametros.valor_entero}" title="ej: 1" 
+                                         required="true" requiredMessage="Ingrese un valor entero"/>
+                            
+                            <h:outputText value="Valor doble:"/>
+                            <p:inputText value="#{parametrosControlador.objParametros.valor_doble}" title="ej: 1" 
+                                         required="true" requiredMessage="Ingrese un valor doble"/>
+                                                         
+                            <h:outputText value="Valor texto"/>
+                            <p:inputText value="#{parametrosControlador.objParametros.valor_texto}" title="ej: uno" 
+                                         required="true" requiredMessage="Ingrese un valor texto"/>
+                            
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{parametrosControlador.insertarParametros()}"
+                                         update=":frmparametros:pnlParametros"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoParametros.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+
+                <p:dialog id="dlgEditarParametros" header="Editar Parametros" widgetVar="wdlgEditarParametros" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarParametros">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarParametros" columns="2">
+                            <h:outputText value="Descripcion:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.descripcion}" title="ej: Parametro1"
+                                         required="true" requiredMessage="Ingrese una Descripcion"/>
+                            
+                            <h:outputText value="Valor entero:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.valor_entero}" title="ej: 1"
+                                         required="true" requiredMessage="Ingrese un valor entero"/>
+                            
+                            <h:outputText value="Valor doble:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.valor_doble}" title="ej: 1"
+                                         required="true" requiredMessage="Ingrese un valor doble"/>
+                            
+                            <h:outputText value="Descripcion:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.valor_texto}" title="ej: uno"
+                                         required="true" requiredMessage="Ingrese un valor texto"/>
+                            
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{parametrosControlador.actualizarParametros()}" 
+                                         update=":frmparametros:pnlParametros"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarParametros.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarParametros" header="Eliminar Parametros" widgetVar="wdlgEliminarParametros" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarParametros">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Parametro?"/>
+                        <p:panelGrid id="pngEliminarParametros" columns="2">
+                            <h:outputText value="Descripcion:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.descripcion}" title="ej: Descripcion"
+                                         required="true" requiredMessage="Ingrese una descripcion" disabled="true"/>
+                          
+                            <h:outputText value="Valor entero:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.valor_entero}" title="ej: 1"
+                                         required="true" requiredMessage="Ingrese un valor entero" disabled="true"/>
+                            
+                            <h:outputText value="Valor doble:"/>
+                            <p:inputText value="#{parametrosControlador.parametrosSel.valor_doble}" title="ej: 1"
+                                         required="true" requiredMessage="Ingrese un valor doble" disabled="true"/>
+                            
+                                   <h:outputText value="Valor texto:"/>
+                                   <p:inputText value="#{parametrosControlador.parametrosSel.valor_texto}" title="ej: uno"
+                                         required="true" requiredMessage="Ingrese un valor texto" disabled="true"/>
+                            
+                                                        
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{parametrosControlador.eliminarParametros()}" 
+                                         update=":frmparametros:pnlParametros"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarParametros.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

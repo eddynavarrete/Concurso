@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Causas del Bajo Rendimiento</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+         <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Causas del Bajo Rendimiento</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmCausasBajoRendimiento">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlCausasBajoRendimiento">
+                        <p:dataTable id="tblCausasBajoRendimiento" value="#{causasBajoRendimientoControlador.lstCausasBajoRendimiento}" 
+                                     var="causasbajorendimiento" 
+                                     paginator="true" rows="10" rowKey="#{causasbajorendimiento.codigo}" selectionMode="single" 
+                                     selection="#{causasBajoRendimientoControlador.causasBajoRendimientoSel}">
+                            <p:column filterBy="#{causasbajorendimiento.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{causasbajorendimiento.nombre}" headerText="Nombre">
+                                <h:outputText value="#{causasbajorendimiento.nombre}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{causasbajorendimiento.descripcion}" filterMatchMode="startsWith" 
+                                      sortBy="#{causasbajorendimiento.descripcion}" headerText="Descripción">
+                                <h:outputText value="#{causasbajorendimiento.descripcion}"/>
+                            </p:column>
+                            
+                            <p:column filterBy="#{causasbajorendimiento.estado}" filterMatchMode="startsWith" 
+                                      sortBy="#{causasbajorendimiento.estado}" headerText="Estado">
+                                <h:outputText value="#{causasbajorendimiento.estado==0 ?'INACTIVO':'ACTIVO'}"/>
+                            </p:column>
+                                                   
+                            <p:column>
+                                <p:commandButton id="btnEditarCausasBajoRendimiento" icon="ui-icon-pencil"  title="Editar Causas Bajo Rendimiento" 
+                                                 oncomplete="wdlgEditarCausasBajoRendimiento.show()" 
+                                                 process="@this" update=":dlgEditarCausasBajoRendimiento, @form">                                   
+                                    <f:setPropertyActionListener value="#{causasbajorendimiento}" 
+                                                                 target="#{causasBajoRendimientoControlador.causasBajoRendimientoSel}"/>
+                                </p:commandButton>
+                                
+                                
+                                <p:commandButton id="btnEliminarCausasBajoRendimiento" icon="ui-icon-close"  title="Eliminar Causas Bajo Rendimiento"
+                                                 oncomplete="wdlgEliminarCausasBajoRendimiento.show()" 
+                                                 update=":dlgEliminarCausasBajoRendimiento">                                   
+                                    <f:setPropertyActionListener value="#{causasbajorendimiento}" 
+                                                                 target="#{causasBajoRendimientoControlador.causasBajoRendimientoSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoCausasBajoRendimiento" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoCausasBajoRendimiento.show()" title="Nueva Causa Bajo Rendimiento"/>  
+                            </f:facet>
+                            
+                            
+                            
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                 <p:dialog id="dlgNuevoCausasBajoRendimiento" header="Nueva Causa de Bajo Rendimiento" widgetVar="wdlgNuevoCausasBajoRendimiento" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold"> 
+                    
+                    
+                    
+                    <h:form id="frmNuevoCausasBajoRendimiento">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoCausasBajoRendimiento" columns="2">
+                            
+                           <h:outputText value="Nombre:"/>
+                           <p:inputText value="#{causasBajoRendimientoControlador.objCausasBajoRendimiento.nombre}" title="ej: Causa 1" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{causasBajoRendimientoControlador.objCausasBajoRendimiento.descripcion}" title="ej: Ninguna" 
+                                         required="true" requiredMessage="Ingrese la descripción"/>
+                           
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{causasBajoRendimientoControlador.objCausasBajoRendimiento.estado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                            
+                            </p:panelGrid>
+                        
+                        <p:commandButton value="Aceptar" action="#{causasBajoRendimientoControlador.insertarCausasBajoRendimiento()}" 
+                                         update=":frmCausasBajoRendimiento:pnlCausasBajoRendimiento"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoCausasBajoRendimiento.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+         
+                
+                
+                
+                
+                <p:dialog id="dlgEditarCausasBajoRendimiento" header="Editar Causas Bajo Rendimiento" widgetVar="wdlgEditarCausasBajoRendimiento" 
+                          modal="true" closable="false" resizable="false" 
+                          showEffect="clip" hideEffect="fold">  
+                    
+                    <h:form id="frmEditarCausasBajoRendimiento">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarCausasBajoRendimiento" columns="2">
+                          
+                              <h:outputText value="Nombre:"/>
+                              <p:inputText value="#{causasBajoRendimientoControlador.causasBajoRendimientoSel.nombre}" title="ej: Causa 1" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{causasBajoRendimientoControlador.causasBajoRendimientoSel.descripcion}" title="ej: Ninguna" 
+                                         required="true" requiredMessage="Ingrese la descripción"/>
+                           
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{causasBajoRendimientoControlador.causasBajoRendimientoSel.estado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                                                                                      
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{causasBajoRendimientoControlador.actualizarCausasBajoRendimiento()}" 
+                                         update=":frmCausasBajoRendimiento:pnlCausasBajoRendimiento"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarCausasBajoRendimiento.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                
+                   <p:dialog id="dlgEliminarCausasBajoRendimiento" header="Eliminar Causas Bajo Rendimiento" widgetVar="wdlgEliminarCausasBajoRendimiento" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarCausasBajoRendimiento">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar la Causa del Bajo Rendimiento?"/>
+                        <p:panelGrid id="pngEliminarCausasBajoRendimiento" columns="2">
+                            
+                             <h:outputText value="Nombre:"/>
+                             <p:inputText value="#{causasBajoRendimientoControlador.causasBajoRendimientoSel.nombre}" title="ej: Causa 1" 
+                                         required="true" requiredMessage="Ingrese el nombre" disabled="true"/>
+                            
+                            <h:outputText value="Descripción:"/>
+                            <p:inputText value="#{causasBajoRendimientoControlador.causasBajoRendimientoSel.descripcion}" title="ej: Ninguna" 
+                                         required="true" requiredMessage="Ingrese la descripción" disabled="true"/>
+                           
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{causasBajoRendimientoControlador.causasBajoRendimientoSel.estado}" 
+                                             required="true" requiredMessage="Elija una opción" disabled="true">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{causasBajoRendimientoControlador.eliminarCausasBajoRendimiento()}" 
+                                         update=":frmCausasBajoRendimiento:pnlCausasBajoRendimiento"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarCausasBajoRendimiento.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

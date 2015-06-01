@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Dependencias</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Dependencias</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmDependencia">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlDependencia">
+                        <p:dataTable id="tblDependencia" value="#{dependenciaC.dependencias}" var="dependencia" 
+                                     paginator="true" rows="10" rowKey="#{dependencia.intCodigo}" selectionMode="single" 
+                                     selection="#{dependenciaC.objDependenciaSel}">
+                            <p:column filterBy="#{dependencia.objCodigoInstitucion.nombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{dependencia.objCodigoInstitucion.nombre}" headerText="Empresa">
+                                <h:outputText value="#{dependencia.objCodigoInstitucion.nombre}"/>
+                            </p:column>
+                            <p:column filterBy="#{dependencia.strNombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{dependencia.strNombre}" headerText="Dependencia">
+                                <h:outputText value="#{dependencia.strNombre}"/>
+                            </p:column>
+                            <p:column filterBy="#{dependencia.strObservacion}" filterMatchMode="startsWith" 
+                                      sortBy="#{dependencia.strObservacion}" headerText="Observación">
+                                <h:outputText value="#{dependencia.strObservacion}"/>
+                            </p:column>
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevaDepenencia" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevaDependencia.show()" title="Nueva dependencia"/>  
+                                <p:commandButton id="btnEditarDependencia" value="Editar" icon="ui-icon-pencil"
+                                                 update=":dlgEditarDependencia" oncomplete="wdlgEditarDependencia.show()"
+                                                 title="Editar Dependencia"/> 
+                                <p:commandButton id="btnEliminarDependencia" value="Eliminar" icon="ui-icon-trash"
+                                                 update=":dlgEliminarDependencia" oncomplete="wdlgEliminarDependencia.show()"
+                                                 title="Eliminar Dependencia"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevaDependencia" header="Nueva Dependencia" widgetVar="wdlgNuevaDependencia" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmNuevaDependencia">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevaDependencia" columns="2">
+                            <h:outputText value="Institución:"/>
+                            <p:selectOneMenu id="cmbInstitucion" value="#{dependenciaC.objInstitucionSel.codigo}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItems value="#{dependenciaC.instituciones}" var="institucion"
+                                               itemLabel="#{institucion.nombre}" itemValue="#{institucion.codigo}"/>
+                            </p:selectOneMenu>
+                            <h:outputText value="Codificación:"/>
+                            <p:inputText value="#{dependenciaC.objDependencia.strCodificacion}" title="ej: D0001" 
+                                         required="true" requiredMessage="Ingrese la codificación"/>
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{dependenciaC.objDependencia.strNombre}" title="ej: Gerencia"
+                                         required="true" requiredMessage="Ingrese el Nombre"/>
+                            <h:outputText value="Observación:"/>
+                            <p:inputText value="#{dependenciaC.objDependencia.strObservacion}" title="ej: Sin personal"
+                                         required="true" requiredMessage="Ingrese la Observación"/>
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{dependenciaC.objDependencia.intEstado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{dependenciaC.insertarDependencia}" 
+                                         update=":frmDependencia:pnlDependencia"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevaDependencia.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+                <p:dialog id="dlgEditarDependencia" header="Editar Dependencia" widgetVar="wdlgEditarDependencia" modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarDependencia">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarDependencia" columns="2">
+                            <h:outputText value="Institución:"/>
+                            <p:selectOneMenu id="cmbInstitucion" 
+                                             value="#{dependenciaC.objDependenciaSel.objCodigoInstitucion.codigo}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItems value="#{dependenciaC.instituciones}" var="institucion"
+                                               itemLabel="#{institucion.nombre}" itemValue="#{institucion.codigo}"/>
+                            </p:selectOneMenu>
+                            <h:outputText value="Codificación:"/>
+                            <p:inputText value="#{dependenciaC.objDependenciaSel.strCodificacion}" title="ej: D0001" 
+                                         required="true" requiredMessage="Ingrese la codificación"/>
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{dependenciaC.objDependenciaSel.strNombre}" title="ej: Gerencia"
+                                         required="true" requiredMessage="Ingrese el Nombre"/>
+                            <h:outputText value="Observación:"/>
+                            <p:inputText value="#{dependenciaC.objDependenciaSel.strObservacion}" title="ej: Sin personal"
+                                         required="true" requiredMessage="Ingrese la Observación"/>
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{dependenciaC.objDependenciaSel.intEstado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{dependenciaC.editarDependencia}" 
+                                         update=":frmDependencia:pnlDependencia"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarDependencia.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+                <p:dialog id="dlgEliminarDependencia" header="Eliminar Dependencia" widgetVar="wdlgEliminarDependencia" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarDependencia">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar la Dependencia?"/>
+                        <p:panelGrid id="pngEliminarDependencia" columns="2">
+                            <h:outputText value="Institución:"/>
+                            <p:selectOneMenu id="cmbInstitucion" 
+                                             value="#{dependenciaC.objDependenciaSel.objCodigoInstitucion.codigo}" 
+                                             required="true" requiredMessage="Elija una opción" disabled="true">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItems value="#{dependenciaC.instituciones}" var="institucion"
+                                               itemLabel="#{institucion.nombre}" itemValue="#{institucion.codigo}"/>
+                            </p:selectOneMenu>
+                            <h:outputText value="Codificación:"/>
+                            <p:inputText value="#{dependenciaC.objDependenciaSel.strCodificacion}" title="ej: D0001" 
+                                         required="true" requiredMessage="Ingrese la codificación" disabled="true"/>
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{dependenciaC.objDependenciaSel.strNombre}" title="ej: Gerencia"
+                                         required="true" requiredMessage="Ingrese el Nombre" disabled="true"/>
+                            <h:outputText value="Observación:"/>
+                            <p:inputText value="#{dependenciaC.objDependenciaSel.strObservacion}" title="ej: Sin personal"
+                                         required="true" requiredMessage="Ingrese la Observación" disabled="true"/>
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{dependenciaC.objDependenciaSel.intEstado}" 
+                                             required="true" requiredMessage="Elija una opción" disabled="true">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{dependenciaC.eliminarDependencia}" 
+                                         update=":frmDependencia:pnlDependencia"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarDependencia.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

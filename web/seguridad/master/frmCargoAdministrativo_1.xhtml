@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>
+            <ui:define name="tituloNavegador">Gestión de Cargos Administrativos</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Cargos Administrativos</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="frmCargoAdministrativo">
+                    <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                    <p:panel id="pnlCargoAdministrativo">
+                        <p:dataTable id="tblCargoAdministrativo" value="#{cargoAdministrativoC.lstCargosAdministrativos}" 
+                                     var="cargoAdministrativo" 
+                                     paginator="true" rows="10" rowKey="#{cargoAdministrativo.intCodigo}" selectionMode="single" 
+                                     selection="#{cargoAdministrativoC.objCargoAdministrativoSel}">
+                            <p:column filterBy="#{cargoAdministrativo.strNombre}" filterMatchMode="startsWith" 
+                                      sortBy="#{cargoAdministrativo.strNombre}" headerText="Nombre">
+                                <h:outputText value="#{cargoAdministrativo.strNombre}"/>
+                            </p:column>
+                            
+                            
+                            
+                            <p:column filterBy="#{cargoAdministrativo.strObservacion}" filterMatchMode="startsWith" 
+                                      sortBy="#{cargoAdministrativo.strObservacion}" headerText="Observación">
+                                <h:outputText value="#{cargoAdministrativo.strObservacion}"/>
+                            </p:column>
+                            
+                            
+                            <p:column filterBy="#{cargoAdministrativo.intEstado}" filterMatchMode="startsWith" 
+                                      sortBy="#{cargoAdministrativo.intEstado}" headerText="Estado">
+                                <h:outputText value="#{cargoAdministrativo.intEstado==0 ?'INACTIVO':'ACTIVO'}"/>
+                            </p:column>
+                            
+                            
+                            <p:column>
+                                <p:commandButton id="btnEditarCargoAdministrativo" icon="ui-icon-pencil"  title="Editar Cargo Administrativo" 
+                                                 oncomplete="wdlgEditarCargoAdministrativo.show()" 
+                                                 process="@this" update=":dlgEditarCargoAdministrativo, @form">                                   
+                                    <f:setPropertyActionListener value="#{cargoAdministrativo}" 
+                                                                 target="#{cargoAdministrativoC.objCargoAdministrativoSel}"/>
+                                </p:commandButton>
+                                <p:commandButton id="btnEliminarCargoAdministrativo" icon="ui-icon-close"  title="Eliminar Cargo Administrativo"
+                                                 oncomplete="wdlgEliminarCargoAdministrativo.show()" 
+                                                 update=":dlgEliminarCargoAdministrativo">                                   
+                                    <f:setPropertyActionListener value="#{cargoAdministrativo}" 
+                                                                 target="#{cargoAdministrativoC.objCargoAdministrativoSel}"/>
+                                </p:commandButton>
+                            </p:column>
+                            
+                            
+                            
+                            <f:facet name="footer">  
+                                <p:commandButton id="btnNuevoCargoAdministrativo" value="Nuevo" icon="ui-icon-newwin"
+                                                 oncomplete="wdlgNuevoCargoAdministrativo.show()" title="Nuevo Cargo Administrativo"/>  
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+                <p:dialog id="dlgNuevoCargoAdministrativo" header="Nuevo Cargo Administrativo" widgetVar="wdlgNuevoCargoAdministrativo" 
+                          modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold">  
+                    
+                    
+                    
+                    <h:form id="frmNuevoCargoAdministrativo">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:panelGrid id="pngNuevoCargoAdministrativo" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{cargoAdministrativoC.objCargoAdministrativo.strNombre}" title="ej: Gerente" 
+                                         required="true" requiredMessage="Ingrese el nombre"/>
+                            <h:outputText value="Observación:"/>
+                            <p:inputText value="#{cargoAdministrativoC.objCargoAdministrativo.strObservacion}" title="ej: Ninguna"
+                                         required="true" requiredMessage="Ingrese una observación"/>
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{cargoAdministrativoC.objCargoAdministrativo.intEstado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activo" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                            
+                            
+                            
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{cargoAdministrativoC.insertarCargoAdministrativo()}" 
+                                         update=":frmCargoAdministrativo:pnlCargoAdministrativo"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgNuevoCargoAdministrativo.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+                <p:dialog id="dlgEditarCargoAdministrativo" header="Editar Cargo Administrativo" widgetVar="wdlgEditarCargoAdministrativo" 
+                          modal="true" 
+                          closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEditarCargoAdministrativo">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <p:messages id="messages" autoUpdate="true"/>  
+                        <p:panelGrid id="pngEditarCargoAdministrativo" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{cargoAdministrativoC.objCargoAdministrativoSel.strNombre}" title="ej: Gerente"
+                                         required="true" requiredMessage="Ingrese el Nombre"/>
+                            <h:outputText value="Observación:"/>
+                            <p:inputText value="#{cargoAdministrativoC.objCargoAdministrativoSel.strObservacion}" title="ej: Ninguna"
+                                         required="true" requiredMessage="Ingrese la Observación"/>
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{cargoAdministrativoC.objCargoAdministrativoSel.intEstado}" 
+                                             required="true" requiredMessage="Elija una opción">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{cargoAdministrativoC.actualizarCargoAdministrativo()}" 
+                                         update=":frmCargoAdministrativo:pnlCargoAdministrativo"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEditarCargoAdministrativo.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+
+                <p:dialog id="dlgEliminarCargoAdministrativo" header="Eliminar Cargo Administrativo" widgetVar="wdlgEliminarCargoAdministrativo" 
+                          modal="true" closable="false" resizable="false" showEffect="clip" hideEffect="fold">  
+                    <h:form id="frmEliminarCargoAdministrativo">
+                        <p:ajaxStatus onstart="dlgStatus.show();" oncomplete="dlgStatus.hide();"/>
+                        <h:outputText value="¿Desea Eliminar el Cargo Administrativo?"/>
+                        <p:panelGrid id="pngEliminarCargoAdministrativo" columns="2">
+                            <h:outputText value="Nombre:"/>
+                            <p:inputText value="#{cargoAdministrativoC.objCargoAdministrativoSel.strNombre}" title="ej: Gerencia"
+                                         required="true" requiredMessage="Ingrese el Nombre" disabled="true"/>
+                            <h:outputText value="Observación:"/>
+                            <p:inputText value="#{cargoAdministrativoC.objCargoAdministrativoSel.strObservacion}" title="ej: ninguna"
+                                         required="true" requiredMessage="Ingrese la Observación" disabled="true"/>
+                            <h:outputText value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{cargoAdministrativoC.objCargoAdministrativoSel.intEstado}" 
+                                             required="true" requiredMessage="Elija una opción" disabled="true">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Activa" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Inactiva" itemValue="#{0}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton value="Aceptar" action="#{cargoAdministrativoC.eliminarCargoAdministrativo()}" 
+                                         update=":frmCargoAdministrativo:pnlCargoAdministrativo"/>
+                        <p:commandButton value="Cancelar" onclick="wdlgEliminarCargoAdministrativo.hide()" type="reset"/>
+                    </h:form> 
+                </p:dialog>
+                <p:dialog modal="true" widgetVar="dlgStatus" header="Procesando" draggable="false" closable="false" 
+                          resizable="false"> 
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />  
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

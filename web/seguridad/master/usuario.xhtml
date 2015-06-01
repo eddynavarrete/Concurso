@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>
+            <ui:define name="Usuarios">Gestión de Usuarios</ui:define>
+        </title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../../templates/plantillaInternaCenter.xhtml">
+            <ui:define name="top">Gestión de Usuarios</ui:define>
+            <ui:define name="contenido">
+                <p:growl id="mensajes" autoUpdate="true" showDetail="true"/>
+                <h:form id="fUsuario">
+                    <p:dataTable id ="tblUsuario" var="usuario" value="#{usuarioControlador.lstUsuario}"
+                                 paginator="true" rows="10">
+                        <p:column headerText="Codigo">
+                            <h:outputText value="#{usuario.codigo}" />
+                        </p:column>
+                        <p:column headerText="Apellido">
+                            <h:outputText value="#{usuario.apellidos}" />
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{usuario.nombres}" />
+                        </p:column>
+                        <p:column headerText="Identificacion" filterBy="#{usuario.identificacion}">
+                            <h:outputText value="#{usuario.identificacion}" />
+                        </p:column>
+                        <p:column headerText="Nombre Corto">
+                            <h:outputText value="#{usuario.nombre_corto}" />
+                        </p:column>
+                        <p:column headerText="Clave">
+                            <h:outputText value="#{usuario.clave}" />
+                        </p:column>
+                        <p:column headerText="Clave Pregunta">
+                            <h:outputText value="#{usuario.clave_pregunta}" />
+                        </p:column>
+                        <p:column headerText="Clave Respuesta">
+                            <h:outputText value="#{usuario.clave_respuesta}" />
+                        </p:column>
+                        <p:column headerText="Mail">
+                            <h:outputText value="#{usuario.mail}" />
+                        </p:column>
+                        <p:column headerText="Estado">
+                            <h:outputText value="#{usuario.estado}" />
+                        </p:column>
+                        <p:column headerText="Primer Acceso">
+                            <h:outputText value="#{usuario.primer_acceso}" />
+                        </p:column>
+                        <p:column headerText="Ultimo Acceso">
+                            <h:outputText value="#{usuario.utimo_acceso}" />
+                        </p:column>
+                        <p:column headerText="Ultimo IP">
+                            <h:outputText value="#{usuario.ultima_ip}" />
+                        </p:column>
+                        <p:column headerText="Fecha de Modificacion">
+                            <h:outputText value="#{usuario.fecha_modificacion}" />
+                        </p:column>
+                        <p:column headerText="Codigo Salt">
+                            <h:outputText value="#{usuario.codigo_salt}" />
+                        </p:column>
+                        <p:column headerText="Ruta Firma">
+                            <h:outputText value="#{usuario.ruta_firma}" />
+                        </p:column>
+                        
+                        <p:column headerText="Funciones">
+                        <p:commandButton id="btnEliminar" icon="ui-icon-close" title="Eliminar"
+                                     oncomplete="wdgEliminar.show()" process="@this"
+                                     update=":dlgEliminar, @form">
+                            <f:setPropertyActionListener value="#{usuario}"
+                                                         target="#{usuarioControlador.objUsuario}"/>                        
+                      
+                    </p:commandButton>
+                            
+                            <p:commandButton id="btnEditar" icon="ui-icon-pencil" title="Editar"
+                                     oncomplete="wdgEditar.show()" process="@this"
+                                     action="#{usuarioControlador.mostrar()}" update=":dlgEditar, @form">
+                                <f:setPropertyActionListener value="#{usuario}"
+                                                     target="#{usuarioControlador.objUsuario}"/>                        
+                      
+                    </p:commandButton>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="btnNuevo" value="Nuevo" icon="ui-icon-newwin"
+                                             update=":dlgNuevo" onclick="PF('wdgNuevo').show()"
+                                             title="Agregar Datos generales" type="button"/>
+                        </f:facet>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+            <ui:define name="dialogos">
+
+
+
+                <p:dialog id="dlgNuevo" widgetVar="wdgNuevo" modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold">
+                    <h:form id="frmNuevo">
+                        <p:panelGrid id="pngNuevo" columns="4">
+                            <f:facet name="header">
+                                Datos Generales
+                            </f:facet>
+                            <h:outputText value="Apellidos"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.apellidos}"/>
+                            <h:outputText value="Nombre"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.nombres}"/>
+                            <h:outputText value="Identificacion"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.identificacion}"/>
+                            <h:outputText value="Nombre Corto"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.nombre_corto}"/>
+                            <h:outputText value="Clave"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.clave}"/>
+                            <h:outputText value="Clave Pregunta"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.clave_pregunta}"/>
+                            <h:outputText value="Clave Respuesta"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.clave_respuesta}"/>
+                            <h:outputText value="mail"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.mail}"/>                      
+                            <p:selectOneMenu id="cmbRol" value="#{usuarioControlador.valorRolSeleccioando}">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="-1"/>
+                                <f:selectItems value="#{rolControlador.roles}" var="rol" 
+                                               itemLabel="#{rol.nombre}" itemValue="#{rol.codigo}"/>
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                                <p:commandButton value="Guardar" action="#{usuarioControlador.insertar()}" 
+                                                 update=":fUsuario" />
+                                <p:commandButton value="Cancelar" onclick="wdgNuevo.hide()" type="reset"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
+                <p:dialog id="dlgEditar" widgetVar="wdgEditar" modal="true" closable="false" resizable="false"
+                          showEffect="clip" hideEffect="fold">
+                    <h:form id="frmEditar">
+                        <p:panelGrid id="pngEditar" columns="4">
+                            <f:facet name="header">
+                                Datos Generales
+                            </f:facet>
+                            <h:outputText value="Apellidos"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.apellidos}"/>
+                            <h:outputText value="Nombre"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.nombres}"/>
+                            <h:outputText value="Identificacion"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.identificacion}"/>
+                            <h:outputText value="Nombre Corto"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.nombre_corto}"/>
+                            <h:outputText value="Clave"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.clave}"/>
+                            <h:outputText value="Clave Pregunta"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.clave_pregunta}"/>
+                            <h:outputText value="Clave Respuesta"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.clave_respuesta}"/>
+                            <h:outputText value="mail"/>
+                            <p:inputText value="#{usuarioControlador.objUsuario.mail}"/>                      
+                            <p:selectOneMenu id="cmbRol" value="#{usuarioControlador.valorRolSeleccioando}">
+                                <f:selectItem itemLabel="Elija una opción" itemValue="-1"/>
+                                <f:selectItems value="#{rolControlador.roles}" var="rol" 
+                                               itemLabel="#{rol.nombre}" itemValue="#{rol.codigo}"/>
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                                <p:commandButton value="Guardar" action="#{usuarioControlador.editar()}" 
+                                                 update=":fUsuario:tblUsuario" />
+                                <p:commandButton value="Cancelar" onclick="wdgEditar.hide()" type="reset"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
+                
+                <p:dialog id="dlgEliminar" widgetVar="wdgEliminar" modal="true" closable="false" resizable="false"
+                      showEffect="clip" hideEffect="fold">
+                <h:form id="frmEliminar">
+                    <p:panelGrid id="pngEliminar" columns="2">
+                        <f:facet name="header">
+                            Eliminar Datos Usuario
+                        </f:facet>
+                        <h:outputText value="Apellidos"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.apellidos}"/>
+                            <h:outputText value="Nombre"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.nombres}"/>
+                            <h:outputText value="Identificacion"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.identificacion}"/>
+                            <h:outputText value="Nombre Corto"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.nombre_corto}"/>
+                            <h:outputText value="Clave"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.clave}"/>
+                            <h:outputText value="Clave Pregunta"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.clave_pregunta}"/>
+                            <h:outputText value="Clave Respuesta"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.clave_respuesta}"/>
+                            <h:outputText value="mail"/>
+                            <h:outputText value="#{usuarioControlador.objUsuario.mail}"/>                       
+                        <f:facet name="footer">
+                            <p:commandButton value="Eliminar" action="#{usuarioControlador.eliminar()}" 
+                                             update=":fUsuario" />
+                            <p:commandButton value="Cancelar" onclick="wdgEliminar.hide()" type="reset"/>
+                        </f:facet>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+
