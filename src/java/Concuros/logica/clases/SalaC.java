@@ -9,18 +9,18 @@ package Concuros.logica.clases;
  *
  * @author Usuario
  */
-public class CiudadC {
-    
+public class SalaC {
     private int codigo;
     private String nombre;
+    private int capacidad;
 
-    public CiudadC() {
+    public SalaC() {
     }
-    
 
-    public CiudadC(int codigo, String nombre) {
+    public SalaC(int codigo, String nombre, int capacidad) {
         this.codigo = codigo;
         this.nombre = nombre;
+        this.capacidad = capacidad;
     }
 
     public int getCodigo() {
@@ -38,5 +38,15 @@ public class CiudadC {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
+    }
+    
+    
     
 }

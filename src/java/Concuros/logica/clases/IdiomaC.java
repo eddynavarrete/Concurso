@@ -9,16 +9,15 @@ package Concuros.logica.clases;
  *
  * @author Usuario
  */
-public class CiudadC {
+public class IdiomaC {
     
     private int codigo;
     private String nombre;
 
-    public CiudadC() {
+    public IdiomaC() {
     }
-    
 
-    public CiudadC(int codigo, String nombre) {
+    public IdiomaC(int codigo, String nombre) {
         this.codigo = codigo;
         this.nombre = nombre;
     }
@@ -38,5 +37,7 @@ public class CiudadC {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+    
+    
     
 }
