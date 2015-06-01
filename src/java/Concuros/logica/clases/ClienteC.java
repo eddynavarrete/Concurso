@@ -16,17 +16,42 @@ public class ClienteC {
     private String apellido;
     private String direccion;
     private String telefono;
+    private String correo;
     private TarjetaC codigoTarjeta;
+    private String cedula;
 
-    public ClienteC(int codigo, String nombre, String apellido, String direccion, String telefono, TarjetaC codigoTarjeta) {
+    public ClienteC(int codigo, String nombre, String apellido, String direccion, String telefono, String correo, TarjetaC codigoTarjeta,String cedula) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.apellido = apellido;
         this.direccion = direccion;
         this.telefono = telefono;
+        this.correo = correo;
         this.codigoTarjeta = codigoTarjeta;
+        this.cedula = cedula;
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+    
     public ClienteC() {
     }
     
