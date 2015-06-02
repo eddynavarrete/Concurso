@@ -52,7 +52,7 @@ public class PeliculaF {
         return lst;
     }
 
-    public static ArrayList<PeliculaC> ObtenerCliente() throws Exception {
+    public static ArrayList<PeliculaC> ObtenerPelicula() throws Exception {
         ArrayList<PeliculaC> lst = new ArrayList<PeliculaC>();
         try {
             String sql = "select * from master.f_select_escuela()";
@@ -89,7 +89,7 @@ public class PeliculaF {
     
     
     
-   public static ArrayList<PeliculaC> ObtenerPeliculaDadoCodigoTarjeta(int codigo) throws Exception {
+   public static ArrayList<PeliculaC> ObtenerPeliculaDadoCodigoTipo(int codigo) throws Exception {
        ArrayList<PeliculaC> lst = new ArrayList<PeliculaC>();
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();

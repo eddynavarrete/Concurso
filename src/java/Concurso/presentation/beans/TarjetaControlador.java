@@ -6,9 +6,12 @@
 package Concurso.presentation.beans;
 
 import Concuros.logica.clases.TarjetaC;
+import Concurso.logica.funciones.TarjetaF;
 import java.util.ArrayList;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import org.primefaces.context.DefaultRequestContext;
+import recursos.Util;
 
 /**
  *
@@ -53,69 +56,69 @@ public class TarjetaControlador {
 //    
     private void reinit(){
         this.objTarjeta = new TarjetaC();
-        this.facultadSel = new TarjetaC();
-        this.cargarFacultad();
-        this.facultadSel = this.lstFacultad.get(0);
+        this.tarjetaSel = new TarjetaC();
+        this.cargarTarjeta();
+        this.tarjetaSel = this.lstTarjeta.get(0);
     }
     
-    public void cargarFacultad() {
+    public void cargarTarjeta() {
         try {
-            this.lstFacultad = FFacultad.ObtenerFacultades();
+            this.lstTarjeta = TarjetaF.ObtenerTarjetas();
         } catch (Exception e) {
-            Util.addErrorMessage("private void cargarFacultad dice: " + e.getMessage());
-            System.out.println("private void cargarFacultad dice: " + e.getMessage());
+            Util.addErrorMessage("private void cargarTarjetas dice: " + e.getMessage());
+            System.out.println("private void cargarTarjetas dice: " + e.getMessage());
         }
      }
         
         
-        public void insertarFacultad() {
+        public void insertarTarjeta() {
         try {
-            if (FFacultad.Insertar(objFacultad)) {
+            if (TarjetaF.Insertar(objTarjeta)) {
                 this.reinit();
-                DefaultRequestContext.getCurrentInstance().execute("wdlgNuevoFacultad.hide()");
+                DefaultRequestContext.getCurrentInstance().execute("wdlgNuevoTarjeta.hide()");
                 Util.addSuccessMessage("Información guardada con éxito");
-                System.out.println("public void insertarFacultad dice: Error al guardar la información");
+                System.out.println("public void insertarTarjeta dice: Error al guardar la información");
            } else { 
                 Util.addSuccessMessage("Error al guardar la información");
-                System.out.println("public void insertarFacultad dice: Error al guardar la información");
+                System.out.println("public void insertartarjeta dice: Error al guardar la información");
            }
         } catch (Exception e) {
-            Util.addErrorMessage("private void insertarFacultad dice: " + e.getMessage());
-            System.out.println("private void insertarFacultad dice: " + e.getMessage());
+            Util.addErrorMessage("private void insertarTarjeta dice: " + e.getMessage());
+            System.out.println("private void insertartarjeta dice: " + e.getMessage());
                 }
         }
 
-     public void actualizarFacultad() {
+     public void actualizarTarjeta() {
         try {
-            if (FFacultad.actualizar(facultadSel)) {
+            if (TarjetaF.actualizar(tarjetaSel)) {
                 this.reinit();
-                DefaultRequestContext.getCurrentInstance().execute("wdlgEditarFacultad.hide()");
+                DefaultRequestContext.getCurrentInstance().execute("wdlgEditarTarjeta.hide()");
                 Util.addSuccessMessage("Información guardada con éxito");
-                System.out.println("public void actualizarFacultad dice: Información guardada con éxito!!");
+                System.out.println("public void actualizarTarjeta dice: Información guardada con éxito!!");
             } else {
                 Util.addErrorMessage("Error al guardar la información");
-                System.out.println("public void actualizarFacultad dice: Error al guardar la información");
+                System.out.println("public void actualizarTarjeta dice: Error al guardar la información");
             }
         } catch (Exception e) {
-            Util.addErrorMessage("private void actualizarFacultad dice: " + e.getMessage());
-            System.out.println("private void actualizarFacultad dice: " + e.getMessage());
+            Util.addErrorMessage("private void actualizarTarjeta dice: " + e.getMessage());
+            System.out.println("private void actualizarTarjeta dice: " + e.getMessage());
         }
     }
 
-    public void eliminarFacultad() {
+    public void eliminarTarjeta() {
         try {
-            if (FFacultad.eliminar(facultadSel)) {
+            if (TarjetaF.eliminar(tarjetaSel.getCodigo())) {
                 this.reinit();
-                DefaultRequestContext.getCurrentInstance().execute("wdlgEliminarFacultad.hide()");
+                DefaultRequestContext.getCurrentInstance().execute("wdlgEliminarTarjeta.hide()");
                 Util.addSuccessMessage("Información eliminada.");
-                System.out.println("public void eliminarFacultad dice: Información eliminada.");
+                System.out.println("public void eliminarTarjeta dice: Información eliminada.");
             } else {
                 Util.addErrorMessage("Error al eliminar la información.");
-                System.out.println("public void eliminarFacultad dice: Error al eliminar la información");
+                System.out.println("public void eliminarTarjeta dice: Error al eliminar la información");
             }
         } catch (Exception e) {
-            Util.addErrorMessage("private void eliminarFacultad dice: " + e.getMessage());
-            System.out.println("private void eliminarFacultad dice: " + e.getMessage());
+            Util.addErrorMessage("private void eliminarTarjeta dice: " + e.getMessage());
+            System.out.println("private void eliminarTarjeta dice: " + e.getMessage());
         }
         
     }
