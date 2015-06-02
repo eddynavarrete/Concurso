@@ -78,7 +78,7 @@ public class IdiomaControlador {
                 this.reinit();
                 DefaultRequestContext.getCurrentInstance().execute("wdlgNuevoIdioma.hide()");
                 Util.addSuccessMessage("Información guardada con éxito");
-                System.out.println("public void insertarCiudad dice: Error al guardar la información");
+                System.out.println("public void insertarIdioma dice: Error al guardar la información");
            } else { 
                 Util.addSuccessMessage("Error al guardar la información");
                 System.out.println("public void insertarIdioma dice: Error al guardar la información");
