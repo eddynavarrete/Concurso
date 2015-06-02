@@ -90,12 +90,13 @@ public class Pelicula_IdiomaF {
     
     
     
-   public static ArrayList<Pelicula_IdiomaC> ObtenerSucursalDadoCodigoTarjeta(int codigo) throws Exception {
+   public static ArrayList<Pelicula_IdiomaC> ObtenerPeliculaIdiomaDadoCodigoIdioma(int codigo) throws Exception {
        ArrayList<Pelicula_IdiomaC> lst = new ArrayList<Pelicula_IdiomaC>();
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_select_escuela_dado_codigo_facultad(?)";
             lstP.add(new Parametro(1, codigo));
+             
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
             lst = llenarPeliculaIdioma(rs);
             rs = null;
@@ -106,6 +107,22 @@ public class Pelicula_IdiomaF {
         return lst;
     }
     
+   public static ArrayList<Pelicula_IdiomaC> ObtenerPeliculaIdiomaDadoCodigoPelicula(int codigo) throws Exception {
+       ArrayList<Pelicula_IdiomaC> lst = new ArrayList<Pelicula_IdiomaC>();
+        try {
+            ArrayList<Parametro> lstP = new ArrayList<Parametro>();
+            String sql = "select * from master.f_select_escuela_dado_codigo_facultad(?)";
+            lstP.add(new Parametro(1, codigo));
+             
+            ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
+            lst = llenarPeliculaIdioma(rs);
+            rs = null;
+
+        } catch (SQLException exConec) {
+            throw new Exception(exConec.getMessage());
+        }
+        return lst;
+    }
     
     public static boolean actualizar(Pelicula_IdiomaC pelicula_idioma) throws Exception {
         boolean eje = false;
