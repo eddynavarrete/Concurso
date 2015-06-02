@@ -4,33 +4,27 @@
  * and open the template in the editor.
  */
 package Concurso.logica.funciones;
-import Concuros.logica.clases.ClienteC;
+import Concuros.logica.clases.PeliculaC;
 import accesodatos.ConjuntoResultado;
 import accesodatos.Parametro;
 import java.util.ArrayList;
 import accesodatos.AccesoDatos;
 import java.sql.SQLException;
-
 /**
  *
  * @author Usuario
  */
-public class ClienteF {
-    
-    public static boolean Insertar(ClienteC cliente) throws Exception {
+public class PeliculaF {
+    public static boolean Insertar(PeliculaC pelicula) throws Exception {
         boolean eje = false;
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
-            String sql = "select * from master.f_insert_escuela(?,?,?,?,?,?,?)";
+            String sql = "select * from master.f_insert_escuela(?,?,?,?)";
             
-            lstP.add(new Parametro(1, cliente.getNombre()));
-            lstP.add(new Parametro(2, cliente.getApellido()));
-            lstP.add(new Parametro(3, cliente.getDireccion()));
-            lstP.add(new Parametro(4, cliente.getTelefono()));
-            lstP.add(new Parametro(5, cliente.getCorreo()));
-            lstP.add(new Parametro(6, cliente.getCedula()));
-            lstP.add(new Parametro(7, cliente.getCodigoTarjeta().getCodigo()));
-            
+            lstP.add(new Parametro(1, pelicula.getNombre()));
+            lstP.add(new Parametro(2, pelicula.getDuracion()));
+            lstP.add(new Parametro(3, pelicula.getCensura()));
+            lstP.add(new Parametro(4, pelicula.getCodigo_tipo().getCodigo()));
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
             while (rs.next()) {
                 if (rs.getString(0).equals("true"));
@@ -42,16 +36,14 @@ public class ClienteF {
         return eje;
     }
 
-    public static ArrayList<ClienteC> llenarCliente(ConjuntoResultado rs) throws Exception {
-        ArrayList<ClienteC> lst = new ArrayList<ClienteC>();
-        ClienteC cliente = null;
+    public static ArrayList<PeliculaC> llenarPelicula(ConjuntoResultado rs) throws Exception {
+        ArrayList<PeliculaC> lst = new ArrayList<PeliculaC>();
+        PeliculaC pelicula = null;
         try {
             while (rs.next()) {
-                cliente = new ClienteC(rs.getInt("pcodigo"), rs.getString("pnombre"),rs.getString("papellido"),
-                        rs.getString("pdireccion"),rs.getString("ptelefono"),rs.getString("pcorreo"),
-                        TarjetaF.ObtenerTarjetaDadoCodigo(rs.getInt("pcodigo_tarjeta")),
-                        rs.getString("pcedula"));
-                lst.add(cliente);
+                pelicula = new PeliculaC(rs.getInt("pcodigo"), rs.getString("pnombre"),rs.getString("pduracion"),
+                        rs.getString("pcensura"),TipoF.ObtenerTipoDadoCodigo(rs.getInt("pcodigo_tipo")));
+                lst.add(pelicula);
             }
         } catch (Exception e) {
             lst.clear();
@@ -60,12 +52,12 @@ public class ClienteF {
         return lst;
     }
 
-    public static ArrayList<ClienteC> ObtenerCliente() throws Exception {
-        ArrayList<ClienteC> lst = new ArrayList<ClienteC>();
+    public static ArrayList<PeliculaC> ObtenerCliente() throws Exception {
+        ArrayList<PeliculaC> lst = new ArrayList<PeliculaC>();
         try {
             String sql = "select * from master.f_select_escuela()";
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql);
-            lst = llenarCliente(rs);
+            lst = llenarPelicula(rs);
             rs = null;
 
         } catch (SQLException exConec) {
@@ -77,15 +69,15 @@ public class ClienteF {
  
     
     
-    public static ClienteC ObtenerClienteDadoCodigo(int codigo) throws Exception {
-        ClienteC lst;
+    public static PeliculaC ObtenerPeliculaDadoCodigo(int codigo) throws Exception {
+        PeliculaC lst;
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_select_escuela_dado_codigo(?)";
             lstP.add(new Parametro(1, codigo));
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
-            lst = new ClienteC();
-            lst =  llenarCliente(rs).get(0);
+            lst = new PeliculaC();
+            lst =  llenarPelicula(rs).get(0);
             rs = null;
         } catch (SQLException exConec) {
             throw new Exception(exConec.getMessage());
@@ -97,14 +89,14 @@ public class ClienteF {
     
     
     
-   public static ArrayList<ClienteC> ObtenerClienteDadoCodigoTarjeta(int codigo) throws Exception {
-       ArrayList<ClienteC> lst = new ArrayList<ClienteC>();
+   public static ArrayList<PeliculaC> ObtenerPeliculaDadoCodigoTarjeta(int codigo) throws Exception {
+       ArrayList<PeliculaC> lst = new ArrayList<PeliculaC>();
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_select_escuela_dado_codigo_facultad(?)";
             lstP.add(new Parametro(1, codigo));
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
-            lst = llenarCliente(rs);
+            lst = llenarPelicula(rs);
             rs = null;
 
         } catch (SQLException exConec) {
@@ -114,19 +106,17 @@ public class ClienteF {
     }
     
     
-    public static boolean actualizar(ClienteC cliente) throws Exception {
+    public static boolean actualizar(PeliculaC pelicula) throws Exception {
         boolean eje = false;
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_update_escuela(?,?,?,?,?)";
        
-            lstP.add(new Parametro(1, cliente.getNombre()));
-            lstP.add(new Parametro(2, cliente.getApellido()));
-            lstP.add(new Parametro(3, cliente.getDireccion()));
-            lstP.add(new Parametro(4, cliente.getTelefono()));
-            lstP.add(new Parametro(5, cliente.getCorreo()));
-            lstP.add(new Parametro(6, cliente.getCodigoTarjeta().getCodigo()));
-            lstP.add(new Parametro(7, cliente.getCedula()));
+            lstP.add(new Parametro(1, pelicula.getNombre()));
+            lstP.add(new Parametro(2, pelicula.getDuracion()));
+            lstP.add(new Parametro(3, pelicula.getCensura()));
+            lstP.add(new Parametro(4, pelicula.getCodigo_tipo().getCodigo()));
+            
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
             while (rs.next()) {
                 if (rs.getString(0).equals("true"));
@@ -158,3 +148,4 @@ public class ClienteF {
      
 
 }
+

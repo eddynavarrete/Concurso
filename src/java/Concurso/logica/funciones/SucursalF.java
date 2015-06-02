@@ -4,33 +4,28 @@
  * and open the template in the editor.
  */
 package Concurso.logica.funciones;
-import Concuros.logica.clases.ClienteC;
+import Concuros.logica.clases.SucursalC;
 import accesodatos.ConjuntoResultado;
 import accesodatos.Parametro;
 import java.util.ArrayList;
 import accesodatos.AccesoDatos;
 import java.sql.SQLException;
-
 /**
  *
  * @author Usuario
  */
-public class ClienteF {
-    
-    public static boolean Insertar(ClienteC cliente) throws Exception {
+public class SucursalF {
+    public static boolean Insertar(SucursalC sucursal) throws Exception {
         boolean eje = false;
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
-            String sql = "select * from master.f_insert_escuela(?,?,?,?,?,?,?)";
+            String sql = "select * from master.f_insert_escuela(?,?,?,?,?)";
             
-            lstP.add(new Parametro(1, cliente.getNombre()));
-            lstP.add(new Parametro(2, cliente.getApellido()));
-            lstP.add(new Parametro(3, cliente.getDireccion()));
-            lstP.add(new Parametro(4, cliente.getTelefono()));
-            lstP.add(new Parametro(5, cliente.getCorreo()));
-            lstP.add(new Parametro(6, cliente.getCedula()));
-            lstP.add(new Parametro(7, cliente.getCodigoTarjeta().getCodigo()));
-            
+            lstP.add(new Parametro(1, sucursal.getNombre()));
+            lstP.add(new Parametro(2, sucursal.getDireccion()));
+            lstP.add(new Parametro(3, sucursal.getTelefono()));
+            lstP.add(new Parametro(4, sucursal.getCodigo_ciudad().getCodigo()));
+            lstP.add(new Parametro(5, sucursal.getCodigo_sala().getCodigo()));
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
             while (rs.next()) {
                 if (rs.getString(0).equals("true"));
@@ -42,16 +37,15 @@ public class ClienteF {
         return eje;
     }
 
-    public static ArrayList<ClienteC> llenarCliente(ConjuntoResultado rs) throws Exception {
-        ArrayList<ClienteC> lst = new ArrayList<ClienteC>();
-        ClienteC cliente = null;
+    public static ArrayList<SucursalC> llenarSucursal(ConjuntoResultado rs) throws Exception {
+        ArrayList<SucursalC> lst = new ArrayList<SucursalC>();
+        SucursalC sucursal = null;
         try {
             while (rs.next()) {
-                cliente = new ClienteC(rs.getInt("pcodigo"), rs.getString("pnombre"),rs.getString("papellido"),
-                        rs.getString("pdireccion"),rs.getString("ptelefono"),rs.getString("pcorreo"),
-                        TarjetaF.ObtenerTarjetaDadoCodigo(rs.getInt("pcodigo_tarjeta")),
-                        rs.getString("pcedula"));
-                lst.add(cliente);
+                sucursal = new SucursalC(rs.getInt("pcodigo"), rs.getString("pnombre"),rs.getString("pdireccion"),
+                        rs.getString("ptelefono"),CiudadF.ObtenerCiudadDadoCodigo(rs.getInt("pcodigo_ciudad")),
+                        SalaF.ObtenerSalaDadoCodigo(rs.getInt("pcodigo_sala")));
+                lst.add(sucursal);
             }
         } catch (Exception e) {
             lst.clear();
@@ -60,12 +54,12 @@ public class ClienteF {
         return lst;
     }
 
-    public static ArrayList<ClienteC> ObtenerCliente() throws Exception {
-        ArrayList<ClienteC> lst = new ArrayList<ClienteC>();
+    public static ArrayList<SucursalC> ObtenerSucursal() throws Exception {
+        ArrayList<SucursalC> lst = new ArrayList<SucursalC>();
         try {
             String sql = "select * from master.f_select_escuela()";
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql);
-            lst = llenarCliente(rs);
+            lst = llenarSucursal(rs);
             rs = null;
 
         } catch (SQLException exConec) {
@@ -77,15 +71,15 @@ public class ClienteF {
  
     
     
-    public static ClienteC ObtenerClienteDadoCodigo(int codigo) throws Exception {
-        ClienteC lst;
+    public static SucursalC ObtenerSucursalDadoCodigo(int codigo) throws Exception {
+        SucursalC lst;
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_select_escuela_dado_codigo(?)";
             lstP.add(new Parametro(1, codigo));
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
-            lst = new ClienteC();
-            lst =  llenarCliente(rs).get(0);
+            lst = new SucursalC();
+            lst =  llenarSucursal(rs).get(0);
             rs = null;
         } catch (SQLException exConec) {
             throw new Exception(exConec.getMessage());
@@ -97,14 +91,14 @@ public class ClienteF {
     
     
     
-   public static ArrayList<ClienteC> ObtenerClienteDadoCodigoTarjeta(int codigo) throws Exception {
-       ArrayList<ClienteC> lst = new ArrayList<ClienteC>();
+   public static ArrayList<SucursalC> ObtenerSucursalDadoCodigoTarjeta(int codigo) throws Exception {
+       ArrayList<SucursalC> lst = new ArrayList<SucursalC>();
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_select_escuela_dado_codigo_facultad(?)";
             lstP.add(new Parametro(1, codigo));
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
-            lst = llenarCliente(rs);
+            lst = llenarSucursal(rs);
             rs = null;
 
         } catch (SQLException exConec) {
@@ -114,19 +108,18 @@ public class ClienteF {
     }
     
     
-    public static boolean actualizar(ClienteC cliente) throws Exception {
+    public static boolean actualizar(SucursalC sucursal) throws Exception {
         boolean eje = false;
         try {
             ArrayList<Parametro> lstP = new ArrayList<Parametro>();
             String sql = "select * from master.f_update_escuela(?,?,?,?,?)";
        
-            lstP.add(new Parametro(1, cliente.getNombre()));
-            lstP.add(new Parametro(2, cliente.getApellido()));
-            lstP.add(new Parametro(3, cliente.getDireccion()));
-            lstP.add(new Parametro(4, cliente.getTelefono()));
-            lstP.add(new Parametro(5, cliente.getCorreo()));
-            lstP.add(new Parametro(6, cliente.getCodigoTarjeta().getCodigo()));
-            lstP.add(new Parametro(7, cliente.getCedula()));
+            lstP.add(new Parametro(1, sucursal.getNombre()));
+            lstP.add(new Parametro(2, sucursal.getDireccion()));
+            lstP.add(new Parametro(3, sucursal.getTelefono()));
+            lstP.add(new Parametro(4, sucursal.getCodigo_ciudad().getCodigo()));
+            lstP.add(new Parametro(5, sucursal.getCodigo_sala().getCodigo()));
+            
             ConjuntoResultado rs = AccesoDatos.ejecutaQuery(sql, lstP);
             while (rs.next()) {
                 if (rs.getString(0).equals("true"));
